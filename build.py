@@ -20,6 +20,17 @@ OUT = os.path.join(ROOT, "dist")
 TODAY = date.today().isoformat()
 PAGES = []  # sitemap için
 
+
+def asset_version(name):
+    """CSS/JS değiştiğinde tarayıcı önbelleğini kırmak için kısa içerik özeti."""
+    import hashlib
+    with open(os.path.join(ROOT, name), "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()[:8]
+
+
+CSS_V = asset_version("style.css")
+JS_V = asset_version("app.js")
+
 ICONS = {
     "hydraulic": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4c6 9 12 16 12 24a12 12 0 0 1-24 0c0-8 6-15 12-24z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 30a6 6 0 0 0 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
     "gear": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="7" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 4v7M24 37v7M4 24h7M37 24h7M9.9 9.9l5 5M33.1 33.1l5 5M9.9 38.1l5-5M33.1 14.9l5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="3"/></svg>',
@@ -144,7 +155,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <meta property="og:url" content="{url}">
 <meta name="theme-color" content="#11161d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v={CSS_V}">
 {schema_html}
 </head>
 <body data-chat-topic="{escape(chat_topic)}" data-chat-city="{escape(chat_city)}">
@@ -201,7 +212,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 </footer>
 {chat_widget()}
 <div class="toast" data-toast role="status" aria-live="polite"></div>
-<script src="/app.js" defer></script>
+<script src="/app.js?v={JS_V}" defer></script>
 </body>
 </html>
 """
