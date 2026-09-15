@@ -126,6 +126,15 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
     PAGES.append(url_of(path))
     schemas = [{
         "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": SITE["domain"] + "/#organization",
+        "name": SITE["name"],
+        "legalName": SITE["company"],
+        "url": SITE["domain"] + "/",
+        "logo": {"@type": "ImageObject", "url": SITE["domain"] + "/logo.png", "width": 1320, "height": 760},
+        "telephone": SITE["phone_tel"],
+    }, {
+        "@context": "https://schema.org",
         "@type": "Store",
         "name": SITE["name"],
         "legalName": SITE["company"],
@@ -168,7 +177,11 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <meta property="og:description" content="{escape(description)}">
 <meta property="og:url" content="{url}">
 <meta name="theme-color" content="#11161d">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:image" content="{SITE['domain']}/logo.png">
 <link rel="stylesheet" href="/style.css?v={CSS_V}">
 {schema_html}
 </head>
@@ -759,7 +772,7 @@ def build_meta():
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n")
     write("_headers", "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n\n"
           "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n")
-    for f in ("style.css", "app.js", "favicon.svg", "logo.svg"):
+    for f in ("style.css", "app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png"):
         src = os.path.join(ROOT, f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(OUT, f))
