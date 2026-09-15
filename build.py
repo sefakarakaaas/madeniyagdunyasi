@@ -12,8 +12,8 @@ from datetime import date
 from html import escape
 from urllib.parse import quote
 
-from data import (CATEGORIES, PROVINCES, PROVINCES_BY_KM, REGION_NOTES,
-                  SECTORS, SITE)
+from data import (BRANDS, CATEGORIES, OIL_FAQ, PROVINCES, PROVINCES_BY_KM,
+                  REGION_NOTES, SECTORS, SITE, ZONES)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "dist")
@@ -27,6 +27,26 @@ ICONS = {
     "filter": '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="12" y="6" width="24" height="36" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M12 14h24M12 34h24M18 14v20M24 14v20M30 14v20" stroke="currentColor" stroke-width="3"/></svg>',
     "truck": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 12h26v22H3zM29 20h9l7 8v6H29z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="12" cy="36" r="4" fill="var(--bg,#fff)" stroke="currentColor" stroke-width="3"/><circle cx="37" cy="36" r="4" fill="var(--bg,#fff)" stroke="currentColor" stroke-width="3"/></svg>',
 }
+
+LOGO_MARK = (
+    '<svg class="logo-svg" viewBox="0 0 56 56" aria-hidden="true">'
+    '<defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">'
+    '<stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#0d1b2e"/></linearGradient>'
+    '<linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">'
+    '<stop offset="0" stop-color="#ffc233"/><stop offset="1" stop-color="#e08e00"/></linearGradient></defs>'
+    '<path d="M28 2 50.5 15v26L28 54 5.5 41V15z" fill="url(#lg1)"/>'
+    '<path d="M28 7.5 45.8 17.8v20.4L28 48.5 10.2 38.2V17.8z" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.2"/>'
+    '<path d="M28 13c5.6 7.6 10 12.9 10 18.6a10 10 0 0 1-20 0c0-5.7 4.4-11 10-18.6z" fill="url(#lg2)"/>'
+    '<path d="M23.4 32.4a4.8 4.8 0 0 0 4.6 4.4" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>'
+    '</svg>'
+)
+
+
+def logo_html(extra_cls=""):
+    return (f'<span class="logo-mark">{LOGO_MARK}</span>'
+            f'<span class="logo-text"><b>MADENİ YAĞ</b> <span>DÜNYASI</span>'
+            f'<small>{SITE["company"].upper()}</small></span>')
+
 
 WA_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>'
 
@@ -50,7 +70,33 @@ def url_of(path):
     return p
 
 
-def layout(path, title, description, body, schema=None, active=""):
+def chat_widget():
+    return f"""<div class="wchat" data-chat>
+  <div class="wchat-teaser" data-chat-teaser hidden>
+    <button type="button" class="wchat-teaser-x" data-chat-teaser-close aria-label="Kapat">×</button>
+    <b>Petromia Madeni Yağ</b>
+    <span data-chat-teaser-text>Merhaba 👋 Size nasıl yardımcı olabiliriz?</span>
+  </div>
+  <section class="wchat-panel" data-chat-panel hidden role="dialog" aria-label="WhatsApp ile mesaj gönderin">
+    <header class="wchat-head">
+      <span class="wchat-avatar">{LOGO_MARK}</span>
+      <span class="wchat-who"><b>Petromia Madeni Yağ</b><small><i class="wchat-online"></i> Çevrimiçi · genellikle birkaç dakikada yanıt verir</small></span>
+      <button type="button" class="wchat-x" data-chat-close aria-label="Sohbeti kapat">×</button>
+    </header>
+    <div class="wchat-body">
+      <div class="wchat-bubble">Merhaba 👋<br>Size nasıl yardımcı olabiliriz? Aşağıdan bir konu seçin veya mesajınızı yazın.<span class="wchat-time" data-chat-time></span></div>
+      <div class="wchat-options" data-chat-options></div>
+    </div>
+    <form class="wchat-foot" data-chat-form>
+      <textarea rows="1" data-chat-input placeholder="Mesajınızı yazın…" aria-label="Mesajınız"></textarea>
+      <button type="submit" class="wchat-send" aria-label="WhatsApp ile gönder"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M2 21 23 12 2 3v7l15 2-15 2z"/></svg></button>
+    </form>
+  </section>
+  <button type="button" class="wchat-fab" data-chat-toggle aria-expanded="false" aria-label="WhatsApp ile yazın">{WA_SVG}<span class="wchat-badge" data-chat-badge hidden>1</span></button>
+</div>"""
+
+
+def layout(path, title, description, body, schema=None, active="", chat_topic="", chat_city=""):
     url = SITE["domain"] + url_of(path)
     PAGES.append(url_of(path))
     schemas = [{
@@ -58,6 +104,7 @@ def layout(path, title, description, body, schema=None, active=""):
         "@type": "Store",
         "name": SITE["name"],
         "legalName": SITE["company"],
+        "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
         "url": SITE["domain"] + "/",
         "telephone": SITE["phone_tel"],
         "priceRange": "₺₺",
@@ -100,7 +147,7 @@ def layout(path, title, description, body, schema=None, active=""):
 <link rel="stylesheet" href="/style.css">
 {schema_html}
 </head>
-<body>
+<body data-chat-topic="{escape(chat_topic)}" data-chat-city="{escape(chat_city)}">
 <div class="topbar">
   <div class="wrap topbar-in">
     <span>📍 Ostim / Ankara çıkışlı · 81 ile sevkiyat</span>
@@ -112,10 +159,7 @@ def layout(path, title, description, body, schema=None, active=""):
 </div>
 <header class="header">
   <div class="wrap header-in">
-    <a class="logo" href="/" aria-label="{SITE['name']} ana sayfa">
-      <span class="logo-mark">MY</span>
-      <span class="logo-text"><b>Madeni Yağ</b> Dünyası<small>Toptan · İş Makinesi · Şantiye</small></span>
-    </a>
+    <a class="logo" href="/" aria-label="{SITE['name']} ana sayfa">{logo_html()}</a>
     <button class="menu-btn" aria-label="Menüyü aç" aria-expanded="false" data-menu>☰</button>
     <nav class="nav" data-nav>
       {nav('/', 'Ana Sayfa', 'home')}
@@ -132,7 +176,7 @@ def layout(path, title, description, body, schema=None, active=""):
 <footer class="footer">
   <div class="wrap footer-grid">
     <div>
-      <div class="logo logo-footer"><span class="logo-mark">MY</span><span class="logo-text"><b>Madeni Yağ</b> Dünyası</span></div>
+      <div class="logo logo-footer">{logo_html()}</div>
       <p>İnşaat, yol, hafriyat firmaları ve şantiyeler için toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre tedariki. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat.</p>
       <p><b>{SITE['company']}</b></p>
     </div>
@@ -155,7 +199,7 @@ def layout(path, title, description, body, schema=None, active=""):
   </div>
   <div class="wrap footer-bottom">© {date.today().year} {SITE['name']} · {SITE['company']}. Tüm hakları saklıdır. Fiyatlar için güncel teklif alınız.</div>
 </footer>
-<a class="wa-float" href="{wa_link('Merhaba, toptan sipariş için teklif almak istiyorum.')}" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın">{WA_SVG}<span>Teklif Al</span></a>
+{chat_widget()}
 <div class="toast" data-toast role="status" aria-live="polite"></div>
 <script src="/app.js" defer></script>
 </body>
@@ -180,15 +224,29 @@ def breadcrumbs(items):
 def product_card(item, cat):
     packs = "".join(f'<option>{escape(p)}</option>' for p in item["pack"])
     data = escape(json.dumps({"name": item["name"], "cat": cat["short"]}, ensure_ascii=False))
+    is_oil = item["brand_label"] == "Markalar"
+    rows = []
+    for b in item["brands"]:
+        label = b if is_oil else f"{b} uyumlu"
+        stock_msg = (f"Merhaba, {label} {item['name']} ürününün stok durumu hakkında bilgi almak istiyorum.")
+        rows.append(
+            f'<li class="brand-row"><span class="brand-name">{escape(label)}</span>'
+            f'<a class="btn-stock" href="{wa_link(stock_msg)}" target="_blank" rel="noopener" '
+            f'data-stock>{WA_SVG}<span>Stok için bilgilendir</span></a>'
+            f'<button class="btn-add" type="button" data-add data-brand="{escape(label)}" '
+            f'aria-label="{escape(label)} {escape(item["name"])} sepete ekle">+ Sepet</button></li>')
     return f"""<article class="product">
   <span class="tag">{escape(cat['short'])}</span>
   <h3>{escape(item['name'])}</h3>
   <p class="spec">{escape(item['spec'])}</p>
   <p>{escape(item['use'])}</p>
   <div class="product-form" data-product="{data}">
-    <label>Ambalaj<select data-pack>{packs}</select></label>
-    <label>Adet<input type="number" min="1" value="1" inputmode="numeric" data-qty></label>
-    <button class="btn btn-sm" type="button" data-add>+ Sepete Ekle</button>
+    <div class="product-opts">
+      <label>Ambalaj<select data-pack>{packs}</select></label>
+      <label>Adet<input type="number" min="1" value="1" inputmode="numeric" data-qty></label>
+    </div>
+    <p class="brand-label">{escape(item['brand_label'])}</p>
+    <ul class="brand-list">{''.join(rows)}</ul>
   </div>
 </article>"""
 
@@ -208,7 +266,7 @@ def category_cards(prefix_text=""):
 def province_chip(p):
     return (f'<a class="chip chip-{p["tier"]["key"]}" href="/iller/{p["slug"]}/">'
             f'<b>{p["plate"]:02d}</b> {escape(p["name"])}'
-            f'<small>{"Merkez" if p["km"] == 0 else "~" + str(p["km"]) + " km"} · {p["tier"]["eta"]}</small></a>')
+            f'<small>{escape(p["zone"])} · {p["tier"]["eta"]}</small></a>')
 
 
 def sectors_html():
@@ -241,7 +299,7 @@ def cta(title, text, wa_text):
 def build_home():
     near = [p for p in PROVINCES_BY_KM if 0 < p["km"] <= 300]
     faq, faq_schema = faq_html([
-        ("Sadece Ankara'ya mı satış yapıyorsunuz?", "Hayır. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat yapıyoruz. Ankara'ya yakın illere ertesi iş günü, diğer illere 1–4 iş günü içinde teslimat hedefliyoruz."),
+        ("Sadece Ankara'ya mı satış yapıyorsunuz?", "Hayır. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat yapıyoruz. Ankara'ya yakın illere ertesi iş günü, diğer illere 1–3 iş günü içinde, en uzak illere bile en geç 2–3 iş günü içinde teslimat hedefliyoruz."),
         ("Sipariş nasıl verilir?", "Ürünleri teklif sepetine ekleyip WhatsApp üzerinden gönderebilir veya bizi arayabilirsiniz. Size il, miktar ve ambalaja göre güncel fiyat ve sevkiyat teklifi iletiyoruz."),
         ("Minimum sipariş miktarı var mı?", "Toptan odaklı çalışıyoruz; teneke, bidon, varil ve IBC bazında satış yapıyoruz. Küçük miktarlı acil ihtiyaçlarınız için de bizi arayabilirsiniz."),
         ("Sevkiyat hangi yöntemle yapılıyor?", "İlinize ve sipariş hacmine göre anlaşmalı kargo, şehirlerarası ambar, parsiyel ya da komple nakliye ile gönderim yapıyoruz. Yakın illerde kendi aracımızla teslimat da planlanabilir."),
@@ -284,12 +342,17 @@ def build_home():
   <div><b>81</b><span>İle sevkiyat</span></div>
   <div><b>4</b><span>Ana ürün grubu</span></div>
   <div><b>{len(near)}</b><span>İlde ertesi gün sevkiyat</span></div>
-  <div><b>1000 L</b><span>IBC'ye kadar ambalaj</span></div>
+  <div><b>2–3 gün</b><span>En uzak ile teslim</span></div>
 </section>
 
 <section class="section wrap">
   <div class="section-head"><span class="eyebrow">Ürün grupları</span><h2>Makine parkınızın ihtiyacı tek yerden</h2></div>
   {category_cards()}
+</section>
+
+<section class="brands-strip wrap" aria-label="Satışını yaptığımız markalar">
+  <span>Satışını yaptığımız markalar</span>
+  <ul>{''.join(f'<li>{escape(b)}</li>' for b in BRANDS)}</ul>
 </section>
 
 <section class="section alt">
@@ -349,7 +412,7 @@ def build_products():
         "urunler/index.html",
         "Ürünler: Hidrolik Yağ, Dişli Yağı, Yedek Parça, Filtre | Madeni Yağ Dünyası",
         "Hidrolik yağ (HM 32/46/68), dişli yağı (80W-90, 85W-140, EP 220), TO-4 şanzıman yağı, kova dişi, pim-burç, hidrolik hortum ve iş makinesi filtreleri toptan.",
-        body, schema=crumb_schema, active="urunler"))
+        body, schema=crumb_schema, active="urunler", chat_topic="ürünleriniz"))
 
     for c in CATEGORIES:
         crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Ürünler", "/urunler/"), (c["name"], None)])
@@ -380,7 +443,7 @@ def build_products():
             f"urunler/{c['slug']}/index.html",
             f"Toptan {c['name']} | Ankara'dan 81 İle Sevkiyat | Madeni Yağ Dünyası",
             c["desc"] + " Ankara Ostim'den Türkiye geneline toptan satış.",
-            body, schema=[crumb_schema, item_list], active="urunler"))
+            body, schema=[crumb_schema, item_list], active="urunler", chat_topic=c["name"]))
 
 
 def dative(name):
@@ -401,27 +464,29 @@ def nearest(p, n=6):
 
 
 def build_provinces():
-    groups = [
-        ("Merkez depo", [p for p in PROVINCES_BY_KM if p["km"] == 0]),
-        ("Öncelikli bölge · ertesi iş günü (≈300 km'ye kadar)", [p for p in PROVINCES_BY_KM if 0 < p["km"] <= 300]),
-        ("Hızlı sevkiyat · 1–2 iş günü (≈300–600 km)", [p for p in PROVINCES_BY_KM if 300 < p["km"] <= 600]),
-        ("Türkiye geneli · 2–4 iş günü (600 km üzeri)", [p for p in PROVINCES_BY_KM if p["km"] > 600]),
-    ]
+    zone_list = sorted(ZONES.items(),
+                       key=lambda z: sum(p["km"] for p in PROVINCES if p["zone"] == z[0]) / len(z[1]))
     crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Sevkiyat İlleri", None)])
+    legend = "".join(
+        f'<span class="legend legend-{k}">{escape(t)}</span>' for k, t in
+        [("merkez", "Aynı gün"), ("yakin", "Ertesi iş günü"), ("orta", "1–2 iş günü"), ("uzak", "2–3 iş günü")])
     body = f"""{crumbs}
 <section class="page-head wrap">
   <h1>81 İle Toptan Madeni Yağ ve Yedek Parça Sevkiyatı</h1>
-  <p class="lead">Tüm siparişler Ankara Ostim deposundan çıkar. İlinizi seçerek sevkiyat yöntemini, tahmini teslim süresini ve o ile özel teklif formunu görebilirsiniz. İller Ankara'ya yakınlığa göre sıralanmıştır.</p>
-  <input class="search" type="search" placeholder="İl ara… (ör. Konya)" data-filter aria-label="İl ara">
+  <p class="lead">Tüm siparişler Ankara Ostim deposundan çıkar. Ankara'ya yakın illere ertesi iş günü, en uzak illere en geç 2–3 iş günü içinde teslimat hedefliyoruz. İller sevkiyat bölgelerine göre, Ankara'ya yakınlık sırasıyla listelenmiştir.</p>
+  <div class="legends">{legend}</div>
+  <input class="search" type="search" placeholder="İl ara… (ör. Karabük)" data-filter aria-label="İl ara">
 </section>
 """
-    for title, items in groups:
-        body += f'<section class="section wrap" data-group><h2>{escape(title)}</h2><div class="chips">{"".join(province_chip(p) for p in items)}</div></section>'
+    for zone, _ in zone_list:
+        items = sorted([p for p in PROVINCES if p["zone"] == zone], key=lambda p: p["km"])
+        body += (f'<section class="section section-tight wrap" data-group><h2>{escape(zone)} <small class="count">{len(items)} il</small></h2>'
+                 f'<div class="chips">{"".join(province_chip(p) for p in items)}</div></section>')
     body += cta("İlinizi listede göremediniz mi?", "Tüm Türkiye'ye gönderim yapıyoruz; ilçe ve şantiye adresi için bize yazın.", "Merhaba, şantiyemize sevkiyat için bilgi almak istiyorum. İl/ilçe: ")
     write("iller/index.html", layout(
         "iller/index.html",
         "Sevkiyat Yapılan İller | 81 İle Toptan Madeni Yağ | Madeni Yağ Dünyası",
-        "Ankara Ostim'den 81 ile toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre sevkiyatı. İlinize özel teslim süresi ve sevkiyat yöntemi.",
+        "Ankara Ostim'den 81 ile toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre sevkiyatı. Yakın illere ertesi gün, en uzak illere 2–3 iş günü.",
         body, schema=crumb_schema, active="iller"))
 
     for p in PROVINCES:
@@ -444,15 +509,32 @@ def shipping_methods(p):
         ]
     if k == "orta":
         return [
-            ("Şehirlerarası ambar", f"{p['name']} ambar hattıyla ekonomik ve hızlı toplu gönderim."),
-            ("Anlaşmalı kargo", "Küçük ve orta hacimli siparişlerde 1–2 iş günü içinde teslim."),
+            ("Şehirlerarası ambar", f"{p['name']} ambar hattıyla ekonomik ve hızlı toplu gönderim, 1–2 iş günü."),
+            ("Anlaşmalı kargo", "Küçük ve orta hacimli siparişlerde 1–2 iş günü içinde kapıya teslim."),
             ("Parsiyel / komple nakliye", "Yüksek hacimli siparişlerde doğrudan şantiye adresine sevkiyat."),
         ]
     return [
-        ("Anlaşmalı kargo", "Filtre, parça ve teneke ürünlerde kapıya teslim."),
+        ("Anlaşmalı kargo", "Filtre, parça ve teneke ürünlerde 2–3 iş günü içinde kapıya teslim."),
         ("Şehirlerarası ambar", f"Varil siparişlerinde {p['name']} ambarına teslim; en ekonomik seçenek."),
-        ("Parsiyel / komple nakliye", "Birden fazla varil veya IBC içeren siparişlerde doğrudan araç."),
+        ("Parsiyel / komple nakliye", "Birden fazla varil veya IBC içeren siparişlerde doğrudan araçla 2–3 iş günü."),
     ]
+
+
+def dative(name):
+    """Türkçe yönelme hâli: Konya'ya, Bolu'ya, Sivas'a, İzmir'e."""
+    vowels = [ch for ch in name.lower() if ch in "aıoueiöü"]
+    back = vowels[-1] in "aıou" if vowels else True
+    suffix = "a" if back else "e"
+    if name[-1].lower() in "aıoueiöü":
+        suffix = "y" + suffix
+    return f"{name}'{suffix}"
+
+
+def nearest(p, n=6):
+    others = [o for o in PROVINCES if o is not p and o["km"] > 0]
+    same = sorted([o for o in others if o["zone"] == p["zone"]], key=lambda o: abs(o["km"] - p["km"]))
+    rest = sorted([o for o in others if o["zone"] != p["zone"]], key=lambda o: abs(o["km"] - p["km"]))
+    return (same + rest)[:n]
 
 
 def build_province(p):
@@ -463,22 +545,11 @@ def build_province(p):
     note = REGION_NOTES[p["region"]]
     methods = "".join(f'<li><b>{escape(a)}</b><span>{escape(b)}</span></li>' for a, b in shipping_methods(p))
     near = nearest(p)
-    faq, faq_schema = faq_html([
-        (f"{name} iline sipariş ne kadar sürede ulaşır?",
-         f"{name} için tahmini teslim süresi {t['eta'].lower()}dür. Süre; sipariş saatine, ilçeye ve seçilen sevkiyat yöntemine göre değişebilir, kesin süre teklif ile birlikte bildirilir."),
-        (f"{name} şantiyeme varil veya IBC gönderebilir misiniz?",
-         f"Evet. Varil ve IBC siparişleri {name} içindeki şantiye, depo veya ambar adresine parsiyel ya da komple nakliye ile gönderilir."),
-        (f"{name} için nakliye ücreti nasıl hesaplanıyor?",
-         "Nakliye ücreti ürün hacmi, ağırlığı ve seçilen yönteme (kargo, ambar, nakliye) göre hesaplanır ve teklifte ürün fiyatıyla birlikte ayrıca belirtilir."),
-        (f"{name} ilçelerine de teslimat yapıyor musunuz?",
-         f"Evet. {name} merkez ve ilçelerine teslimat yapıyoruz. Uzak ilçe ve şantiye noktaları için ambar teslim veya nakliye seçeneği sunulur."),
-        ("Ödeme ve fatura nasıl oluyor?",
-         "Tüm satışlar faturalıdır. Ödeme koşulları sipariş hacmine göre teklif aşamasında netleştirilir."),
-    ])
+    faq, faq_schema = faq_html([(q.replace("{il}", name), a.replace("{il}", name)) for q, a in OIL_FAQ])
     crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Sevkiyat İlleri", "/iller/"), (name, None)])
+    wa_text = f"Merhaba, {name} ilindeki şantiyemiz için toptan teklif almak istiyoruz."
     ship_title = ("Ankara içinde nasıl teslim ediyoruz?" if is_center
                   else f"Ankara'dan {dative(name)} nasıl gönderiyoruz?")
-    wa_text = f"Merhaba, {name} ilindeki şantiyemiz için toptan teklif almak istiyoruz."
     service = {
         "@context": "https://schema.org", "@type": "Service",
         "name": f"{name} Toptan Madeni Yağ ve İş Makinesi Yedek Parça Tedariki",
@@ -490,7 +561,7 @@ def build_province(p):
 <section class="hero hero-il">
   <div class="wrap hero-in">
     <div class="hero-text">
-      <span class="eyebrow">{p['plate']:02d} · {escape(name)} · {escape(p['region'])} Bölgesi</span>
+      <span class="eyebrow">{p['plate']:02d} · {escape(name)} · {escape(p['zone'])}</span>
       <h1>{escape(name)} Toptan Madeni Yağ ve <em>İş Makinesi Yedek Parça</em></h1>
       <p class="lead">{escape(name)} ve ilçelerindeki inşaat, yol yapım ve hafriyat firmalarına; {escape(note)} için <b>hidrolik yağ, dişli yağı, iş makinesi yedek parçası ve filtre</b> sevkiyatı yapıyoruz. Siparişleriniz {escape(loc)} {'' if is_center else 'mesafedeki '}Ostim deposundan {'aynı gün' if is_center else 'kargo, ambar ve nakliye ile'} şantiyenize ulaşır.</p>
       <div class="hero-btns">
@@ -504,9 +575,26 @@ def build_province(p):
         <div><dt>Çıkış noktası</dt><dd>Ostim / Ankara</dd></div>
         <div><dt>Mesafe</dt><dd>{'Merkez' if is_center else '≈ ' + str(p['km']) + ' km'}</dd></div>
         <div><dt>Tahmini teslim</dt><dd>{escape(t['eta'])}</dd></div>
-        <div><dt>Sevkiyat sınıfı</dt><dd>{escape(t['label'])}</dd></div>
+        <div><dt>Sevkiyat bölgesi</dt><dd>{escape(p['zone'])}</dd></div>
       </dl>
       <p class="muted">Mesafe ve süreler yaklaşık değerlerdir; kesin bilgi teklifle birlikte verilir.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="about-il">
+    <div class="about-plate"><small>Plaka</small><b>{p['plate']:02d}</b></div>
+    <div>
+      <span class="eyebrow">{escape(name)} hakkında</span>
+      <h2>Kısaca {escape(name)}</h2>
+      <p>{escape(p['info'])}</p>
+      <ul class="about-facts">
+        <li><b>Coğrafi bölge</b>{escape(p['region'])}</li>
+        <li><b>Sevkiyat bölgesi</b>{escape(p['zone'])}</li>
+        <li><b>Ankara'ya uzaklık</b>{'Merkez' if is_center else '≈ ' + str(p['km']) + ' km'}</li>
+        <li><b>Teslim süresi</b>{escape(t['eta'])}</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -529,36 +617,38 @@ def build_province(p):
         <input type="hidden" name="il" value="{escape(name)}">
         <label>Firma adı<input name="firma" required autocomplete="organization"></label>
         <label>İlçe / Şantiye<input name="ilce" placeholder="ör. merkez, OSB, şantiye adı"></label>
-        <label>İhtiyacınız<textarea name="not" rows="3" required placeholder="ör. 4 varil HM 46 hidrolik yağ, 10 adet yakıt filtresi"></textarea></label>
+        <label>İhtiyacınız<textarea name="not" rows="3" required placeholder="ör. 4 varil Shell HM 46 hidrolik yağ, 10 adet yakıt filtresi"></textarea></label>
         <button class="btn btn-wa btn-block" type="submit">{WA_SVG} WhatsApp ile Gönder</button>
       </form>
     </div>
   </div>
 </section>
 
-<section class="section wrap">
-  <div class="section-head"><span class="eyebrow">Hedef sektörler</span><h2>{escape(name)} için kimlere tedarik sağlıyoruz?</h2></div>
-  {sectors_html()}
-</section>
-
 <section class="section wrap narrow">
-  <div class="section-head"><h2>{escape(name)} sevkiyatı hakkında sorular</h2></div>
+  <div class="section-head"><span class="eyebrow">Sık sorulan sorular</span><h2>Madeni yağ hakkında merak edilenler</h2></div>
   {faq}
 </section>
 
+<section class="section alt">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">Hedef sektörler</span><h2>{escape(name)} için kimlere tedarik sağlıyoruz?</h2></div>
+    {sectors_html()}
+  </div>
+</section>
+
 <section class="section wrap">
-  <h2>Yakın ve benzer mesafedeki iller</h2>
+  <h2>{escape(p['zone'])} ve yakın mesafedeki iller</h2>
   <div class="chips">{''.join(province_chip(o) for o in near)}</div>
   <p><a href="/iller/">Tüm illeri gör →</a></p>
 </section>
-{cta(name + ' şantiyeniz için teklif alın', 'Ürün, miktar ve ilçe bilgisini gönderin; ürün + nakliye dahil toplam teklif iletelim.', wa_text)}
+{cta(name + ' şantiyeniz için teklif alın', 'Ürün, marka, miktar ve ilçe bilgisini gönderin; ürün + nakliye dahil toplam teklif iletelim.', wa_text)}
 """
-    title = (f"{name} Toptan Madeni Yağ, Hidrolik Yağ, İş Makinesi Parçası | {t['badge']}")
-    desc = (f"{name} inşaat, yol ve hafriyat firmalarına toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre. "
-            f"Ankara Ostim'den {name} iline {t['eta'].lower()} teslimat. WhatsApp'tan teklif alın.")
+    title = f"{name} Toptan Madeni Yağ, Hidrolik Yağ, İş Makinesi Parçası | {t['badge']}"
+    desc = (f"{name} ({p['zone']}) inşaat, yol ve hafriyat firmalarına toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre. "
+            f"Ankara Ostim'den {t['eta'].lower()} teslimat. WhatsApp'tan teklif alın.")
     write(f"iller/{p['slug']}/index.html", layout(
         f"iller/{p['slug']}/index.html", title, desc, body,
-        schema=[crumb_schema, faq_schema, service], active="iller"))
+        schema=[crumb_schema, faq_schema, service], active="iller", chat_city=name))
 
 
 def build_cart():
