@@ -16,11 +16,11 @@ python3 build.py
 cd dist && python3 -m http.server 8000
 ```
 
-## Cloudflare Pages ayarları
-- Framework preset: **None**
+## Cloudflare (Workers – statik site) ayarları
 - Build command: `python3 build.py`
-- Build output directory: `dist`
+- Deploy command: `npx wrangler deploy`
+- `wrangler.jsonc` → `dist/` klasörünü yayınlar (ücretsiz plan)
 
 ## Güncelleme
 Telefon, adres, ürün veya il bilgisini `data.py` içinden değiştirip GitHub'a gönderin;
-Cloudflare Pages siteyi otomatik yeniden oluşturur.
+Cloudflare siteyi otomatik yeniden oluşturur.

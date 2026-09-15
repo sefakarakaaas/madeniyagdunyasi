@@ -2,7 +2,7 @@
 """
 Madeni Yağ Dünyası - statik site üreticisi.
 Kullanım:  python3 build.py   ->  dist/ klasörünü üretir.
-Cloudflare Pages ayarı: Build command = python3 build.py, Output = dist
+Cloudflare: Build command = python3 build.py, Deploy = npx wrangler deploy (wrangler.jsonc -> dist)
 Sadece Python standart kütüphanesi kullanır.
 """
 import json
