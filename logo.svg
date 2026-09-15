@@ -1,0 +1,33 @@
+<svg viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dropBody" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#3A2408"/>
+      <stop offset="30%" stop-color="#6B3E10"/>
+      <stop offset="55%" stop-color="#8C4E12"/>
+      <stop offset="75%" stop-color="#3F2609"/>
+      <stop offset="100%" stop-color="#120B03"/>
+    </linearGradient>
+    <radialGradient id="dropHighlight" cx="32%" cy="24%" r="35%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#FFE9B8" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dropRim" cx="70%" cy="75%" r="45%">
+      <stop offset="0%" stop-color="#C9852E" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#C9852E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="floorShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="140" cy="390" rx="78" ry="16" fill="url(#floorShadow)"/>
+  <path d="M140,90 C196,168 230,222 230,268 C230,320 189,360 140,360 C91,360 50,320 50,268 C50,222 84,168 140,90 Z" fill="url(#dropBody)"/>
+  <path d="M140,90 C196,168 230,222 230,268 C230,320 189,360 140,360 C91,360 50,320 50,268 C50,222 84,168 140,90 Z" fill="url(#dropRim)"/>
+  <ellipse cx="105" cy="210" rx="34" ry="58" fill="url(#dropHighlight)"/>
+  <ellipse cx="150" cy="320" rx="10" ry="6" fill="#FFE9B8" opacity="0.25"/>
+  <text x="270" y="235" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="64" fill="#12233F" letter-spacing="1">Madeni Yağ</text>
+  <text x="270" y="300" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="64" fill="#12233F" letter-spacing="1">Dünyası</text>
+  <rect x="271" y="322" width="360" height="3" fill="#8C4E12"/>
+  <text x="271" y="352" font-family="Arial, Helvetica, sans-serif" font-size="17" letter-spacing="3" fill="#5B6672">MOTOR VE ENDÜSTRİYEL YAĞLAR</text>
+</svg>

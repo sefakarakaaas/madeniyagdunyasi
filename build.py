@@ -39,24 +39,38 @@ ICONS = {
     "truck": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 12h26v22H3zM29 20h9l7 8v6H29z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="12" cy="36" r="4" fill="var(--bg,#fff)" stroke="currentColor" stroke-width="3"/><circle cx="37" cy="36" r="4" fill="var(--bg,#fff)" stroke="currentColor" stroke-width="3"/></svg>',
 }
 
-LOGO_MARK = (
-    '<svg class="logo-svg" viewBox="0 0 56 56" aria-hidden="true">'
-    '<defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">'
-    '<stop offset="0" stop-color="#1f3a5f"/><stop offset="1" stop-color="#0d1b2e"/></linearGradient>'
-    '<linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">'
-    '<stop offset="0" stop-color="#ffc233"/><stop offset="1" stop-color="#e08e00"/></linearGradient></defs>'
-    '<path d="M28 2 50.5 15v26L28 54 5.5 41V15z" fill="url(#lg1)"/>'
-    '<path d="M28 7.5 45.8 17.8v20.4L28 48.5 10.2 38.2V17.8z" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="1.2"/>'
-    '<path d="M28 13c5.6 7.6 10 12.9 10 18.6a10 10 0 0 1-20 0c0-5.7 4.4-11 10-18.6z" fill="url(#lg2)"/>'
-    '<path d="M23.4 32.4a4.8 4.8 0 0 0 4.6 4.4" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="2" stroke-linecap="round"/>'
-    '</svg>'
-)
+def logo_mark(uid="h", shadow=True):
+    """Kullanıcının verdiği logodaki parlak madeni yağ damlası (logo.svg ile aynı)."""
+    sh = (f'<ellipse cx="140" cy="390" rx="78" ry="16" fill="url(#fs-{uid})"/>' if shadow else "")
+    vb = "40 80 200 330" if shadow else "44 84 192 282"
+    d = ("M140,90 C196,168 230,222 230,268 C230,320 189,360 140,360 "
+         "C91,360 50,320 50,268 C50,222 84,168 140,90 Z")
+    return (
+        f'<svg class="logo-svg" viewBox="{vb}" aria-hidden="true"><defs>'
+        f'<linearGradient id="db-{uid}" x1="20%" y1="0%" x2="80%" y2="100%">'
+        '<stop offset="0%" stop-color="#3A2408"/><stop offset="30%" stop-color="#6B3E10"/>'
+        '<stop offset="55%" stop-color="#8C4E12"/><stop offset="75%" stop-color="#3F2609"/>'
+        '<stop offset="100%" stop-color="#120B03"/></linearGradient>'
+        f'<radialGradient id="dh-{uid}" cx="32%" cy="24%" r="35%">'
+        '<stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>'
+        '<stop offset="45%" stop-color="#FFE9B8" stop-opacity="0.35"/>'
+        '<stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>'
+        f'<radialGradient id="dr-{uid}" cx="70%" cy="75%" r="45%">'
+        '<stop offset="0%" stop-color="#C9852E" stop-opacity="0.55"/>'
+        '<stop offset="100%" stop-color="#C9852E" stop-opacity="0"/></radialGradient>'
+        f'<radialGradient id="fs-{uid}" cx="50%" cy="50%" r="50%">'
+        '<stop offset="0%" stop-color="#000000" stop-opacity="0.35"/>'
+        '<stop offset="100%" stop-color="#000000" stop-opacity="0"/></radialGradient></defs>'
+        f'{sh}<path d="{d}" fill="url(#db-{uid})"/><path d="{d}" fill="url(#dr-{uid})"/>'
+        f'<ellipse cx="105" cy="210" rx="34" ry="58" fill="url(#dh-{uid})"/>'
+        '<ellipse cx="150" cy="320" rx="10" ry="6" fill="#FFE9B8" opacity="0.25"/></svg>'
+    )
 
 
-def logo_html(extra_cls=""):
-    return (f'<span class="logo-mark">{LOGO_MARK}</span>'
-            f'<span class="logo-text"><b>MADENİ YAĞ</b> <span>DÜNYASI</span>'
-            f'<small>{SITE["company"].upper()}</small></span>')
+def logo_html(uid="h"):
+    return (f'<span class="logo-mark">{logo_mark(uid)}</span>'
+            '<span class="logo-text"><span class="logo-name">Madeni Yağ<br>Dünyası</span>'
+            '<span class="logo-tag">MOTOR VE ENDÜSTRİYEL YAĞLAR</span></span>')
 
 
 WA_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>'
@@ -90,7 +104,7 @@ def chat_widget():
   </div>
   <section class="wchat-panel" data-chat-panel hidden role="dialog" aria-label="WhatsApp ile mesaj gönderin">
     <header class="wchat-head">
-      <span class="wchat-avatar">{LOGO_MARK}</span>
+      <span class="wchat-avatar">{logo_mark("c", shadow=False)}</span>
       <span class="wchat-who"><b>Petromia Madeni Yağ</b><small><i class="wchat-online"></i> Çevrimiçi · genellikle birkaç dakikada yanıt verir</small></span>
       <button type="button" class="wchat-x" data-chat-close aria-label="Sohbeti kapat">×</button>
     </header>
@@ -187,7 +201,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <footer class="footer">
   <div class="wrap footer-grid">
     <div>
-      <div class="logo logo-footer">{logo_html()}</div>
+      <div class="logo logo-footer">{logo_html("f")}</div>
       <p>İnşaat, yol, hafriyat firmaları ve şantiyeler için toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre tedariki. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat.</p>
       <p><b>{SITE['company']}</b></p>
     </div>
@@ -208,7 +222,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
       <a href="{SITE['maps']}" target="_blank" rel="noopener">Yol tarifi al →</a>
     </div>
   </div>
-  <div class="wrap footer-bottom">© {date.today().year} {SITE['name']} · {SITE['company']}. Tüm hakları saklıdır. Fiyatlar için güncel teklif alınız.</div>
+  <div class="wrap footer-bottom">© {date.today().year} {SITE['name']} · {SITE['company']} · Tüm hakları saklıdır. Fiyatlar için güncel teklif alınız.</div>
 </footer>
 {chat_widget()}
 <div class="toast" data-toast role="status" aria-live="polite"></div>
@@ -745,7 +759,7 @@ def build_meta():
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n")
     write("_headers", "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n\n"
           "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n")
-    for f in ("style.css", "app.js", "favicon.svg"):
+    for f in ("style.css", "app.js", "favicon.svg", "logo.svg"):
         src = os.path.join(ROOT, f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(OUT, f))

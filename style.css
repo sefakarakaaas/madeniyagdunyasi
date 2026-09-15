@@ -29,12 +29,11 @@ p{margin:0 0 1em}
 .header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
 .header-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{display:block;width:48px;height:48px;flex:none}
+.logo-mark{display:block;width:40px;height:66px;flex:none}
 .logo-svg{width:100%;height:100%;display:block}
-.logo-text{display:flex;flex-direction:column;color:#0d1b2e;line-height:1.05;font-size:1.02rem;letter-spacing:.06em}
-.logo-text b{font-weight:900}
-.logo-text>span{font-weight:500;letter-spacing:.22em;margin-top:1px}
-.logo-text small{display:block;font-size:.6rem;color:var(--muted);letter-spacing:.14em;margin-top:5px;padding-top:4px;border-top:1px solid var(--line)}
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-name{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.3rem;line-height:1.08;color:#12233F;letter-spacing:.02em;padding-bottom:5px;border-bottom:2px solid #8C4E12}
+.logo-tag{font-family:Arial,Helvetica,sans-serif;font-size:.56rem;letter-spacing:.2em;color:#5B6672;margin-top:5px;white-space:nowrap}
 .nav{display:flex;align-items:center;gap:6px}
 .nav a{white-space:nowrap;text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600;color:var(--ink2)}
 .nav a:hover,.nav a.active{background:var(--bg2)}
@@ -182,8 +181,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(245,163,0,.35);bo
 .footer a{display:block;color:#d4dbe5;text-decoration:none;margin-bottom:6px}
 .footer p a{display:inline}
 .footer a:hover{color:var(--amber)}
-.logo-footer .logo-text{color:#fff}
-.logo-footer .logo-text small{color:#8d99a8;border-color:#2a3340}
+.logo-footer{background:#fff;border-radius:12px;padding:10px 16px;display:inline-flex}
 .logo-footer{margin-bottom:12px}
 .footer-bottom{border-top:1px solid #2a3340;margin-top:32px;padding-block:18px;font-size:.82rem}
 
@@ -228,7 +226,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(245,163,0,.35);bo
 @keyframes wpop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 .wchat-head{display:flex;align-items:center;gap:10px;background:#075e54;color:#fff;padding:12px 12px 12px 14px}
 .wchat-avatar{width:40px;height:40px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
-.wchat-avatar .logo-svg{width:30px;height:30px}
+.wchat-avatar .logo-svg{width:22px;height:30px}
 .wchat-who{flex:1;line-height:1.25}
 .wchat-who small{display:block;font-size:.72rem;opacity:.85}
 .wchat-online{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;margin-right:3px}
@@ -250,7 +248,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(245,163,0,.35);bo
   html.chat-docked .wchat-panel{width:320px}
   html.chat-docked .nav{gap:2px}
   html.chat-docked .nav a{padding:8px 8px;font-size:.92rem}
-  html.chat-docked .logo-text small,html.chat-docked .topbar-in>span:first-child{display:none}
+  html.chat-docked .logo-tag,html.chat-docked .topbar-in>span:first-child{display:none}
   html.chat-docked .hero-in{grid-template-columns:1fr}
 }
 /* geniş ekranda panel açıkken içerik sola kayar, yazıların üstüne binmez */
@@ -282,6 +280,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(245,163,0,.35);bo
   .section{padding-block:40px}
   .chip{min-width:calc(50% - 5px)}
   .about-il{grid-template-columns:1fr;padding:20px}
+  .logo-name{font-size:1.08rem}
+  .logo-tag{font-size:.48rem;letter-spacing:.14em}
+  .logo-mark{width:32px;height:54px}
   .about-plate{width:110px}
   .wchat{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
   .wchat-teaser{max-width:200px;font-size:.8rem;padding:9px 26px 9px 11px}
