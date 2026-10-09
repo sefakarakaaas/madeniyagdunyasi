@@ -7,18 +7,34 @@ Sadece Python standart kütüphanesi kullanır.
 """
 import json
 import os
+import re
 import shutil
+import subprocess
 from datetime import date
 from html import escape
 from urllib.parse import quote
 
-from data import (BRANDS, CATEGORIES, OIL_FAQ, PROVINCES, PROVINCES_BY_KM,
+from data import (BRANDS, CATEGORIES, CLIMATE, OIL_FAQ, PROVINCES, PROVINCES_BY_KM,
                   REGION_NOTES, SECTORS, SITE, ZONES)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "dist")
 TODAY = date.today().isoformat()
 PAGES = []  # sitemap için
+SEO_WARNINGS = []
+
+
+def content_date():
+    """Sitemap lastmod: içeriğin son değiştiği commit tarihi (her derlemede 'bugün' yazmak Google'a yanlış sinyal verir)."""
+    try:
+        out = subprocess.run(["git", "log", "-1", "--format=%cs", "--", "data.py", "build.py", "style.css", "img"],
+                             cwd=ROOT, capture_output=True, text=True, timeout=10).stdout.strip()
+        return out or TODAY
+    except (OSError, subprocess.SubprocessError):
+        return TODAY
+
+
+LASTMOD = content_date()
 
 
 def asset_version(name):
@@ -28,8 +44,19 @@ def asset_version(name):
         return hashlib.md5(f.read()).hexdigest()[:8]
 
 
-CSS_V = asset_version("style.css")
 JS_V = asset_version("app.js")
+
+
+def inline_css():
+    """style.css sayfaya gömülür: ayrı CSS isteği (render-blocking) ortadan kalkar."""
+    with open(os.path.join(ROOT, "style.css"), encoding="utf-8") as f:
+        css = f.read()
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    css = re.sub(r"\s*\n\s*", "", css)
+    return re.sub(r"\s*([{};,>])\s*", r"\1", css)
+
+
+CSS = inline_css()
 
 ICONS = {
     "hydraulic": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4c6 9 12 16 12 24a12 12 0 0 1-24 0c0-8 6-15 12-24z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M18 30a6 6 0 0 0 6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -80,6 +107,19 @@ def wa_link(text):
     return f"https://wa.me/{SITE['whatsapp']}?text={quote(text)}"
 
 
+def fit(text, fallback, limit=65):
+    """Başlık/açıklama Google'da kesilmesin: uzunsa kısa alternatifi kullan."""
+    return text if len(text) <= limit else fallback
+
+
+def locative(name):
+    """Türkçe bulunma hâli + -ki: Van'daki, Muş'taki, İzmir'deki."""
+    vowels = [ch for ch in name.lower() if ch in "aıoueiöü"]
+    back = vowels[-1] in "aıou" if vowels else True
+    hard = name[-1].lower() in "fstkçşhp"
+    return f"{name}'{'t' if hard else 'd'}{'a' if back else 'e'}ki"
+
+
 def write(path, html):
     full = os.path.join(OUT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
@@ -123,6 +163,10 @@ def chat_widget():
 
 def layout(path, title, description, body, schema=None, active="", chat_topic="", chat_city=""):
     url = SITE["domain"] + url_of(path)
+    if len(title) > 65:
+        SEO_WARNINGS.append(f"Uzun başlık ({len(title)}): {path}")
+    if path != "404.html" and not 70 <= len(description) <= 160:
+        SEO_WARNINGS.append(f"Açıklama uzunluğu {len(description)}: {path}")
     PAGES.append(url_of(path))
     schemas = [{
         "@context": "https://schema.org",
@@ -136,7 +180,10 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
     }, {
         "@context": "https://schema.org",
         "@type": "Store",
+        "@id": SITE["domain"] + "/#store",
         "name": SITE["name"],
+        "parentOrganization": {"@id": SITE["domain"] + "/#organization"},
+        "hasMap": SITE["maps"],
         "legalName": SITE["company"],
         "image": [SITE["domain"] + f"/img/{n}.webp" for n, *_ in PHOTOS],
         "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
@@ -183,7 +230,10 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:image" content="{SITE['domain']}/logo.png">
-<link rel="stylesheet" href="/style.css?v={CSS_V}">
+<meta property="og:image:width" content="1320">
+<meta property="og:image:height" content="760">
+<meta name="twitter:card" content="summary_large_image">
+<style>{CSS}</style>
 {schema_html}
 </head>
 <body data-chat-topic="{escape(chat_topic)}" data-chat-city="{escape(chat_city)}">
@@ -198,10 +248,11 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 </div>
 <header class="header">
   <div class="wrap header-in">
-    <a class="logo" href="/" aria-label="{SITE['name']} ana sayfa">{logo_html()}</a>
+    <a class="logo" href="/">{logo_html()}</a>
     <button class="menu-btn" aria-label="Menüyü aç" aria-expanded="false" data-menu>☰</button>
     <nav class="nav" data-nav>
       {nav('/', 'Ana Sayfa', 'home')}
+      {nav('/hakkimizda/', 'Hakkımızda', 'hakkimizda')}
       {nav('/urunler/', 'Ürünler', 'urunler')}
       {nav('/iller/', 'Sevkiyat İlleri', 'iller')}
       {nav('/iletisim/', 'İletişim', 'iletisim')}
@@ -220,16 +271,16 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
       <p><b>{SITE['company']}</b></p>
     </div>
     <div>
-      <h4>Ürün Grupları</h4>
+      <h2 class="fh">Ürün Grupları</h2>
       {''.join(f'<a href="/urunler/{c["slug"]}/">{c["name"]}</a>' for c in CATEGORIES)}
     </div>
     <div>
-      <h4>Yakın İller</h4>
+      <h2 class="fh">Yakın İller</h2>
       {''.join(f'<a href="/iller/{p["slug"]}/">{p["name"]}</a>' for p in PROVINCES_BY_KM[1:9])}
       <a href="/iller/"><b>Tüm iller →</b></a>
     </div>
     <div>
-      <h4>İletişim</h4>
+      <h2 class="fh">İletişim</h2>
       <p>📍 {SITE['address']}</p>
       <p>📞 <a href="tel:{SITE['phone_tel']}">{SITE['phone']}</a></p>
       <p>🕗 {SITE['hours']}</p>
@@ -273,7 +324,7 @@ def product_card(item, cat):
             f'<a class="btn-stock" href="{wa_link(stock_msg)}" target="_blank" rel="noopener" '
             f'data-stock>{WA_SVG}<span>Stok için bilgilendir</span></a>'
             f'<button class="btn-add" type="button" data-add data-brand="{escape(label)}" '
-            f'aria-label="{escape(label)} {escape(item["name"])} sepete ekle">+ Sepet</button></li>')
+            f'aria-label="+ Sepet: {escape(label)} {escape(item["name"])}">+ Sepet</button></li>')
     return f"""<article class="product">
   <span class="tag">{escape(cat['short'])}</span>
   <h3>{escape(item['name'])}</h3>
@@ -314,19 +365,20 @@ def sectors_html():
 
 
 PHOTOS = [
-    ("depo-on-cephe", "Ostim mağaza ve depomuz", "Ostim OSB'deki Castrol Service binamızın ön cephesi.", "50% 50%"),
-    ("castrol-service-tabela", "Castrol Service noktası", "Binek, ağır vasıta ve iş makinesi yağları tek noktada.", "50% 50%"),
-    ("depo-palet-stok", "Paletli stok ve sevkiyat", "Depomuzda paletli teneke ve bidon stoku.", "50% 62%"),
+    ("depo-on-cephe", "Ostim mağaza ve depomuz", "Ostim OSB'deki Castrol Service binamızın ön cephesi."),
+    ("castrol-service-tabela", "Castrol Service noktası", "Binek, ağır vasıta ve iş makinesi yağları tek noktada."),
+    ("depo-palet-stok", "Paletli stok ve sevkiyat", "Depomuzda paletli teneke ve bidon stoku."),
 ]
 
 
 def gallery_html():
     figs = []
-    for name, title, text, pos in PHOTOS:
+    for name, title, text in PHOTOS:
         figs.append(
             f'<figure><a href="/img/{name}.webp" target="_blank" rel="noopener">'
-            f'<img src="/img/{name}-k.webp" alt="{escape(title)} – {escape(text)}" '
-            f'width="600" height="450" loading="lazy" decoding="async" style="object-position:{pos}"></a>'
+            f'<img src="/img/{name}-k.webp" srcset="/img/{name}-s.webp 400w, /img/{name}-k.webp 600w" '
+            f'sizes="(max-width:560px) 92vw, (max-width:980px) 46vw, 380px" alt="{escape(title)} – {escape(text)}" '
+            f'width="600" height="450" loading="lazy" decoding="async"></a>'
             f'<figcaption><b>{escape(title)}</b>{escape(text)}</figcaption></figure>')
     return '<div class="gallery">' + "".join(figs) + '</div>'
 
@@ -451,8 +503,8 @@ def build_home():
 """
     write("index.html", layout(
         "index.html",
-        "Toptan Madeni Yağ, Hidrolik Yağ ve İş Makinesi Parçası | Madeni Yağ Dünyası",
-        "İnşaat, yol ve hafriyat firmaları için toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre. Ankara Ostim'den 81 ile hızlı sevkiyat. WhatsApp'tan teklif alın.",
+        "Toptan Madeni Yağ ve Hidrolik Yağ – Ankara | Madeni Yağ Dünyası",
+        "İnşaat, yol ve hafriyat firmalarına toptan hidrolik yağ, dişli yağı, iş makinesi parçası ve filtre. Ankara Ostim'den 81 ile sevkiyat.",
         body, schema=faq_schema, active="home"))
 
 
@@ -463,17 +515,19 @@ def build_products():
   <h1>Toptan Ürün Gruplarımız</h1>
   <p class="lead">Şantiye ve iş makinesi odaklı dört ana ürün grubunda, teneke adetten IBC tanka kadar toptan tedarik. Ürünleri sepete ekleyin, WhatsApp'tan tek mesajla teklif alın.</p>
 </section>
-<section class="section wrap">{category_cards()}</section>
+<section class="section wrap"><h2>Ürün grupları</h2>{category_cards()}</section>
 """
     for c in CATEGORIES:
-        body += f"""<section class="section wrap" id="{c['slug']}">
-  <div class="section-head row"><h2>{escape(c['name'])}</h2><a href="/urunler/{c['slug']}/">Detaylı sayfa →</a></div>
-  <div class="products">{''.join(product_card(i, c) for i in c['items'])}</div>
+        rows = "".join(f'<li><b>{escape(i["name"])}</b><span>{escape(i["spec"])} · {escape(i["use"])}</span></li>'
+                       for i in c["items"])
+        body += f"""<section class="section section-tight wrap" id="{c['slug']}">
+  <div class="section-head row"><h2>{escape(c['name'])}</h2><a href="/urunler/{c['slug']}/">Fiyat ve stok için ürünleri gör →</a></div>
+  <ul class="methods plain">{rows}</ul>
 </section>"""
     body += cta("Aradığınız ürünü bulamadınız mı?", "Listede olmayan viskozite, marka veya parça için bize yazın.", "Merhaba, listede olmayan bir ürün için bilgi almak istiyorum: ")
     write("urunler/index.html", layout(
         "urunler/index.html",
-        "Ürünler: Hidrolik Yağ, Dişli Yağı, Yedek Parça, Filtre | Madeni Yağ Dünyası",
+        "Ürünler: Hidrolik Yağ, Dişli Yağı, Filtre | Madeni Yağ Dünyası",
         "Hidrolik yağ (HM 32/46/68), dişli yağı (80W-90, 85W-140, EP 220), TO-4 şanzıman yağı, kova dişi, pim-burç, hidrolik hortum ve iş makinesi filtreleri toptan.",
         body, schema=crumb_schema, active="urunler", chat_topic="ürünleriniz"))
 
@@ -491,6 +545,7 @@ def build_products():
   <p class="lead">{escape(c['intro'])}</p>
 </section>
 <section class="section wrap">
+  <h2>{escape(c['name'])} ürün listesi</h2>
   <div class="products">{''.join(product_card(i, c) for i in c['items'])}</div>
 </section>
 <section class="section wrap">
@@ -504,26 +559,9 @@ def build_products():
 """
         write(f"urunler/{c['slug']}/index.html", layout(
             f"urunler/{c['slug']}/index.html",
-            f"Toptan {c['name']} | Ankara'dan 81 İle Sevkiyat | Madeni Yağ Dünyası",
-            c["desc"] + " Ankara Ostim'den Türkiye geneline toptan satış.",
+            fit(f"Toptan {c['name']} | 81 İle Sevkiyat | Madeni Yağ Dünyası", f"Toptan {c['name']} | Madeni Yağ Dünyası"),
+            fit(c["desc"] + " Ankara Ostim'den 81 ile toptan satış.", c["desc"], 160),
             body, schema=[crumb_schema, item_list], active="urunler", chat_topic=c["name"]))
-
-
-def dative(name):
-    """Türkçe yönelme hâli: Konya'ya, Bolu'ya, Sivas'a, İzmir'e."""
-    vowels = [ch for ch in name.lower() if ch in "aıoueiöü"]
-    back = vowels[-1] in "aıou" if vowels else True
-    suffix = "a" if back else "e"
-    if name[-1].lower() in "aıoueiöü":
-        suffix = "y" + suffix
-    return f"{name}'{suffix}"
-
-
-def nearest(p, n=6):
-    others = [o for o in PROVINCES if o is not p and o["km"] > 0]
-    same = sorted([o for o in others if o["region"] == p["region"]], key=lambda o: abs(o["km"] - p["km"]))
-    rest = sorted([o for o in others if o["region"] != p["region"]], key=lambda o: abs(o["km"] - p["km"]))
-    return (same + rest)[:n]
 
 
 def build_provinces():
@@ -548,7 +586,7 @@ def build_provinces():
     body += cta("İlinizi listede göremediniz mi?", "Tüm Türkiye'ye gönderim yapıyoruz; ilçe ve şantiye adresi için bize yazın.", "Merhaba, şantiyemize sevkiyat için bilgi almak istiyorum. İl/ilçe: ")
     write("iller/index.html", layout(
         "iller/index.html",
-        "Sevkiyat Yapılan İller | 81 İle Toptan Madeni Yağ | Madeni Yağ Dünyası",
+        "81 İle Toptan Madeni Yağ Sevkiyatı | Madeni Yağ Dünyası",
         "Ankara Ostim'den 81 ile toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre sevkiyatı. Yakın illere ertesi gün, en uzak illere 2–3 iş günü.",
         body, schema=crumb_schema, active="iller"))
 
@@ -608,7 +646,24 @@ def build_province(p):
     note = REGION_NOTES[p["region"]]
     methods = "".join(f'<li><b>{escape(a)}</b><span>{escape(b)}</span></li>' for a, b in shipping_methods(p))
     near = nearest(p)
-    faq, faq_schema = faq_html([(q.replace("{il}", name), a.replace("{il}", name)) for q, a in OIL_FAQ])
+    clim = CLIMATE[p["region"]]
+    hours = round(p["km"] / 70) if not is_center else 0
+    grades = ", ".join(f"{g} ({w.lower()})" for w, g in clim["hidrolik"])
+    methods_txt = ", ".join(a.lower() for a, _ in shipping_methods(p))
+    local_qas = [
+        (f"{dative(name)} sipariş kaç günde ulaşır?",
+         ("Ankara içindeki şantiye ve depolara aynı gün teslimat planlıyoruz; Ostim deposundan ürünlerinizi kendiniz de teslim alabilirsiniz."
+          if is_center else
+          f"{name}, Ostim depomuza karayoluyla yaklaşık {p['km']} km (≈ {hours} saat) uzaklıktadır. "
+          f"Onaylanan siparişler {t['eta'].lower()} içinde teslim edilir. Gönderim seçenekleri: {methods_txt}.")),
+        (f"{locative(name)} makineler için hangi hidrolik yağ uygun?",
+         f"{name} {p['region']} Bölgesi'ndedir: {clim['iklim']}. Bu koşullarda genellikle {grades} tercih edilir. "
+         "Kesin seçim için makinenizin kılavuzundaki sınıf esas alınmalıdır."),
+    ]
+    # Aynı bölgedeki komşu iller farklı genel sorular göstersin
+    start = ZONES[p["zone"]].index(p["plate"]) * 3
+    generic = [OIL_FAQ[(start + k) % len(OIL_FAQ)] for k in range(3)]
+    faq, faq_schema = faq_html(local_qas + [(q.replace("{il}", name), a.replace("{il}", name)) for q, a in generic])
     crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Sevkiyat İlleri", "/iller/"), (name, None)])
     wa_text = f"Merhaba, {name} ilindeki şantiyemiz için toptan teklif almak istiyoruz."
     ship_title = ("Ankara içinde nasıl teslim ediyoruz?" if is_center
@@ -616,7 +671,7 @@ def build_province(p):
     service = {
         "@context": "https://schema.org", "@type": "Service",
         "name": f"{name} Toptan Madeni Yağ ve İş Makinesi Yedek Parça Tedariki",
-        "provider": {"@type": "Store", "name": SITE["name"], "telephone": SITE["phone_tel"]},
+        "provider": {"@id": SITE["domain"] + "/#store"},
         "areaServed": {"@type": "AdministrativeArea", "name": name},
         "serviceType": "Toptan madeni yağ, hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre satışı",
     }
@@ -655,7 +710,7 @@ def build_province(p):
       <ul class="about-facts">
         <li><b>Coğrafi bölge</b>{escape(p['region'])}</li>
         <li><b>Sevkiyat bölgesi</b>{escape(p['zone'])}</li>
-        <li><b>Ankara'ya uzaklık</b>{'Merkez' if is_center else '≈ ' + str(p['km']) + ' km'}</li>
+        <li><b>Ankara'ya uzaklık</b>{'Merkez' if is_center else '≈ ' + str(p['km']) + ' km · ' + str(hours) + ' saat'}</li>
         <li><b>Teslim süresi</b>{escape(t['eta'])}</li>
       </ul>
     </div>
@@ -663,8 +718,24 @@ def build_province(p):
 </section>
 
 <section class="section wrap">
+  <div class="two-col">
+    <div>
+      <span class="eyebrow">İklime göre yağ seçimi</span>
+      <h2>{escape(name)} şantiyelerinde hangi yağ?</h2>
+      <p>{escape(name)} {escape(p['region'])} Bölgesi'nde yer alır: {escape(clim['iklim'])}. Hidrolik yağ viskozitesini bu koşullara göre seçmek pompa ve valf ömrünü doğrudan etkiler.</p>
+      <p class="muted">{escape(clim['ipucu'])}</p>
+    </div>
+    <div class="card">
+      <h3>{escape(name)} için önerilen hidrolik yağ sınıfları</h3>
+      <ul class="methods plain">{''.join(f'<li><b>{escape(g)}</b><span>{escape(w)}</span></li>' for w, g in clim['hidrolik'])}</ul>
+      <p class="muted">Makine kılavuzundaki sınıf her zaman önceliklidir. <a href="/urunler/hidrolik-yaglar/">Hidrolik yağları gör →</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
   <div class="section-head"><span class="eyebrow">{escape(name)} için ürün grupları</span><h2>{escape(name)} şantiyelerine gönderdiğimiz ürünler</h2></div>
-  {category_cards()}
+  <div class="chips">{''.join(f'<a class="chip" href="/urunler/{c["slug"]}/">{escape(c["name"])}</a>' for c in CATEGORIES)}</div>
 </section>
 
 <section class="section alt">
@@ -688,15 +759,8 @@ def build_province(p):
 </section>
 
 <section class="section wrap narrow">
-  <div class="section-head"><span class="eyebrow">Sık sorulan sorular</span><h2>Madeni yağ hakkında merak edilenler</h2></div>
+  <div class="section-head"><span class="eyebrow">Sık sorulan sorular</span><h2>{escape(name)} siparişleri hakkında merak edilenler</h2></div>
   {faq}
-</section>
-
-<section class="section alt">
-  <div class="wrap">
-    <div class="section-head"><span class="eyebrow">Hedef sektörler</span><h2>{escape(name)} için kimlere tedarik sağlıyoruz?</h2></div>
-    {sectors_html()}
-  </div>
 </section>
 
 <section class="section wrap">
@@ -706,9 +770,12 @@ def build_province(p):
 </section>
 {cta(name + ' şantiyeniz için teklif alın', 'Ürün, marka, miktar ve ilçe bilgisini gönderin; ürün + nakliye dahil toplam teklif iletelim.', wa_text)}
 """
-    title = f"{name} Toptan Madeni Yağ, Hidrolik Yağ, İş Makinesi Parçası | {t['badge']}"
-    desc = (f"{name} ({p['zone']}) inşaat, yol ve hafriyat firmalarına toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre. "
-            f"Ankara Ostim'den {t['eta'].lower()} teslimat. WhatsApp'tan teklif alın.")
+    title = fit(f"{name} Toptan Madeni Yağ ve Hidrolik Yağ | {t['badge']}",
+                f"{name} Toptan Madeni Yağ | {t['badge']}")
+    desc = fit(f"{name} şantiyelerine toptan hidrolik yağ, dişli yağı, iş makinesi parçası ve filtre. "
+               f"Ankara Ostim'den {t['eta'].lower()} teslim, WhatsApp'tan teklif.",
+               f"{name} şantiyelerine toptan hidrolik yağ, dişli yağı, parça ve filtre. "
+               f"Ostim'den {t['eta'].lower()} teslim.", 160)
     write(f"iller/{p['slug']}/index.html", layout(
         f"iller/{p['slug']}/index.html", title, desc, body,
         schema=[crumb_schema, faq_schema, service], active="iller", chat_city=name))
@@ -782,6 +849,46 @@ def build_contact():
         body, schema=crumb_schema, active="iletisim"))
 
 
+def build_about():
+    crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Hakkımızda", None)])
+    body = f"""{crumbs}
+<section class="page-head wrap"><h1>Hakkımızda</h1>
+<p class="lead">{SITE['name']}, {SITE['company']} bünyesinde Ankara Ostim OSB'deki mağaza ve depomuzdan inşaat, yol yapım ve hafriyat firmalarına toptan madeni yağ, iş makinesi yedek parçası ve filtre tedarik eder.</p></section>
+<section class="section wrap two-col">
+  <div>
+    <h2>Ne yapıyoruz?</h2>
+    <p>Şantiyede çalışan makine parklarının ihtiyaç duyduğu ürünleri tek noktadan, toptan ve faturalı olarak sağlıyoruz. Yağ, filtre ve aşınma parçalarını aynı sevkiyatta göndererek ayrı ayrı nakliye masrafını ve makinenin bekleme süresini azaltıyoruz.</p>
+    <ul class="methods plain">{''.join(f'<li><b><a href="/urunler/{c["slug"]}/">{escape(c["name"])}</a></b><span>{escape(c["desc"])}</span></li>' for c in CATEGORIES)}</ul>
+  </div>
+  <div class="card">
+    <h2>Kısaca biz</h2>
+    <ul class="methods plain">
+      <li><b>Firma</b><span>{SITE['company']}</span></li>
+      <li><b>Mağaza ve depo</b><span>{SITE['address']}</span></li>
+      <li><b>Hizmet alanı</b><span>Türkiye'nin 81 ili; yakın illere ertesi iş günü, en uzak illere 2–3 iş günü</span></li>
+      <li><b>Satışını yaptığımız markalar</b><span>{', '.join(BRANDS)}</span></li>
+      <li><b>Çalışma saatleri</b><span>{SITE['hours']}</span></li>
+    </ul>
+    <a class="btn" href="/iletisim/">İletişime geçin</a>
+  </div>
+</section>
+<section class="section alt">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">Kimlere hizmet veriyoruz?</span><h2>Sahada çalışan firmaların tedarikçisi</h2></div>
+    {sectors_html()}
+  </div>
+</section>
+<section class="section wrap">
+  <div class="section-head"><span class="eyebrow">Ostim depomuz</span><h2>Mağaza ve depomuzdan kareler</h2></div>
+  {gallery_html()}
+</section>
+"""
+    write("hakkimizda/index.html", layout(
+        "hakkimizda/index.html", "Hakkımızda | Madeni Yağ Dünyası – Ostim / Ankara",
+        f"{SITE['company']}: Ankara Ostim'deki depomuzdan inşaat, yol ve hafriyat firmalarına toptan madeni yağ, yedek parça ve filtre.",
+        body, schema=crumb_schema, active="hakkimizda"))
+
+
 def build_404():
     body = """<section class="page-head wrap narrow center"><h1>Sayfa bulunamadı</h1>
 <p class="lead">Aradığınız sayfa taşınmış veya kaldırılmış olabilir.</p>
@@ -795,14 +902,18 @@ def build_meta():
     urls = []
     for path in PAGES:
         prio = "1.0" if path == "/" else ("0.8" if path.startswith("/iller/") else "0.7")
-        urls.append(f"  <url><loc>{SITE['domain']}{path}</loc><lastmod>{TODAY}</lastmod><priority>{prio}</priority></url>")
+        urls.append(f"  <url><loc>{SITE['domain']}{path}</loc><lastmod>{LASTMOD}</lastmod><priority>{prio}</priority></url>")
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + "\n".join(urls) + "\n</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n")
     write("_headers", "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n\n"
-          "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n"
-          "/img/*\n  Cache-Control: public, max-age=604800\n")
-    for f in ("style.css", "app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png"):
+          "/app.js\n  Cache-Control: public, max-age=31536000, immutable\n"
+          "/img/*\n  Cache-Control: public, max-age=2592000\n"
+          "/favicon*\n  Cache-Control: public, max-age=2592000\n")
+    # Eski statik sitenin adresleri yeni sayfalara kalıcı yönlenir (Google'daki eski kayıtlar boşa düşmesin)
+    write("_redirects", "/hakkimizda.html /hakkimizda/ 301\n/iletisim.html /iletisim/ 301\n"
+          "/markalarimiz.html /urunler/ 301\n/index.html / 301\n")
+    for f in ("app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png"):
         src = os.path.join(ROOT, f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(OUT, f))
@@ -818,9 +929,12 @@ def main():
     build_provinces()
     build_cart()
     build_contact()
+    build_about()
     build_404()
     build_meta()
     print(f"Tamam: {len(PAGES)} sayfa -> {OUT}")
+    for w in SEO_WARNINGS:
+        print("SEO uyarısı:", w)
 
 
 if __name__ == "__main__":

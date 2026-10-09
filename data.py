@@ -145,6 +145,45 @@ REGION_NOTES = {
 }
 
 
+# Coğrafi bölgeye göre iklim ve yağ seçimi önerisi (il sayfalarında kullanılır)
+CLIMATE = {
+    "İç Anadolu": {
+        "iklim": "karasal iklim; soğuk kışlar, sıcak ve kurak yazlar, gece-gündüz sıcaklık farkı yüksek",
+        "hidrolik": [("Dört mevsim", "HM 46"), ("Kış", "HM 32"), ("Açık sahada gece-gündüz farkı yüksekse", "HV 46")],
+        "ipucu": "Kış sabahlarında makineyi yük almadan birkaç dakika rölantide ısıtmak pompayı korur; mevsim geçişinde viskozite değişimini filtre değişimiyle birlikte planlayın.",
+    },
+    "Karadeniz": {
+        "iklim": "ılıman ve bol yağışlı; yüksek nem, iç ve yüksek kesimlerde sert kış",
+        "hidrolik": [("Genel kullanım", "HM 46"), ("Yüksek kesimlerde kış", "HV 46 / HM 32"), ("Ağır yük, yaz", "HM 68")],
+        "ipucu": "Nem ve yağış yağa su karışma riskini artırır: varilleri kapalı alanda yan yatırarak saklayın, separatörlü yakıt filtresini ve yağın sütlü görünüp görünmediğini düzenli kontrol edin.",
+    },
+    "Marmara": {
+        "iklim": "ılıman; serin-yağışlı kışlar, sıcak ve nemli yazlar",
+        "hidrolik": [("Genel kullanım", "HM 46"), ("Yaz ve ağır yük", "HM 68"), ("Trakya'da sert kış", "HV 46")],
+        "ipucu": "Yoğun çalışan şehir içi ve kentsel dönüşüm şantiyelerinde değişim aralığını çalışma saatine göre takip edin; büyük parklarda yağ analizi maliyeti düşürür.",
+    },
+    "Ege": {
+        "iklim": "sıcak ve kurak yazlar, ılık kışlar; iç kesimlerde karasal etki",
+        "hidrolik": [("Genel kullanım", "HM 46"), ("Yaz ve ağır yük", "HM 68"), ("İç kesimlerde kış", "HM 32 / HV 46")],
+        "ipucu": "Mermer ocağı ve maden sahalarındaki toz, hava ve hidrolik filtreleri hızlı tıkar; tozlu sahalarda filtre değişim aralığını kısaltın.",
+    },
+    "Akdeniz": {
+        "iklim": "sıcak ve nemli uzun yazlar, ılık kışlar",
+        "hidrolik": [("Yaz ve ağır yük", "HM 68"), ("Kış ve genel kullanım", "HM 46"), ("Kırıcı, pres", "HM 100")],
+        "ipucu": "Yüksek sıcaklık yağın oksitlenmesini hızlandırır: yağ soğutucularını temiz tutun, koyulaşma ve yanık kokusu fark ederseniz değişimi öne alın.",
+    },
+    "Doğu Anadolu": {
+        "iklim": "sert ve uzun kışlar, -20 °C'nin altına inebilen geceler, kısa ve serin yazlar",
+        "hidrolik": [("Kış", "HM 32 / HV 46"), ("Yaz", "HM 46"), ("Gece-gündüz farkı yüksek sahalar", "HV 46")],
+        "ipucu": "Soğuk ilk çalıştırmada kalın yağ pompayı zorlar; kış öncesi düşük viskoziteli yağa geçin, şanzıman ve motor yağlarında da soğuk çalışmaya uygun sınıfları tercih edin.",
+    },
+    "Güneydoğu Anadolu": {
+        "iklim": "çok sıcak ve kurak yazlar (40 °C üzeri), ılık kışlar",
+        "hidrolik": [("Yaz ve ağır yük", "HM 68"), ("Kış ve genel kullanım", "HM 46"), ("Ağır yüklü akslar", "85W-140 dişli yağı")],
+        "ipucu": "Sıcak ve tozlu ortamda radyatör ve yağ soğutucularını sık temizleyin; hava filtresi kontrolünü günlük bakıma ekleyin.",
+    },
+}
+
 # Sevkiyat bölgeleri (TÜİK İBBS 1. düzey bölgeleri)
 ZONES = {
     "İstanbul": [34],
