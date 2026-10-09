@@ -138,6 +138,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
         "@type": "Store",
         "name": SITE["name"],
         "legalName": SITE["company"],
+        "image": [SITE["domain"] + f"/img/{n}.webp" for n, *_ in PHOTOS],
         "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
         "url": SITE["domain"] + "/",
         "telephone": SITE["phone_tel"],
@@ -312,6 +313,24 @@ def sectors_html():
         f'<div class="sector"><h3>{escape(t)}</h3><p>{escape(d)}</p></div>' for t, d in SECTORS) + '</div>'
 
 
+PHOTOS = [
+    ("depo-on-cephe", "Ostim mağaza ve depomuz", "Ostim OSB'deki Castrol Service binamızın ön cephesi.", "50% 50%"),
+    ("castrol-service-tabela", "Castrol Service noktası", "Binek, ağır vasıta ve iş makinesi yağları tek noktada.", "50% 50%"),
+    ("depo-palet-stok", "Paletli stok ve sevkiyat", "Depomuzda paletli teneke ve bidon stoku.", "50% 62%"),
+]
+
+
+def gallery_html():
+    figs = []
+    for name, title, text, pos in PHOTOS:
+        figs.append(
+            f'<figure><a href="/img/{name}.webp" target="_blank" rel="noopener">'
+            f'<img src="/img/{name}-k.webp" alt="{escape(title)} – {escape(text)}" '
+            f'width="600" height="450" loading="lazy" decoding="async" style="object-position:{pos}"></a>'
+            f'<figcaption><b>{escape(title)}</b>{escape(text)}</figcaption></figure>')
+    return '<div class="gallery">' + "".join(figs) + '</div>'
+
+
 def faq_html(qas):
     html = '<div class="faq">' + "".join(
         f'<details><summary>{escape(q)}</summary><p>{escape(a)}</p></details>' for q, a in qas) + '</div>'
@@ -403,6 +422,12 @@ def build_home():
       <li><b>Sevkiyat ve takip</b><span>Ürün yola çıkar; takip numarası veya araç bilgisi size iletilir.</span></li>
     </ol>
   </div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head"><span class="eyebrow">Ostim depomuz</span><h2>Siparişleriniz buradan yola çıkıyor</h2>
+  <p>Ostim OSB'deki mağaza ve depomuzda ürünler stokta tutulur ve siparişiniz buradan sevkiyata hazırlanır. <a href="/iletisim/">Adres ve yol tarifi →</a></p></div>
+  {gallery_html()}
 </section>
 
 <section class="section wrap">
@@ -746,6 +771,10 @@ def build_contact():
     </form>
   </div>
 </section>
+<section class="section wrap">
+  <div class="section-head"><span class="eyebrow">Bizi ziyaret edin</span><h2>Ostim'deki mağaza ve depomuz</h2></div>
+  {gallery_html()}
+</section>
 """
     write("iletisim/index.html", layout(
         "iletisim/index.html", "İletişim | Madeni Yağ Dünyası – Ostim / Ankara",
@@ -771,11 +800,13 @@ def build_meta():
           + "\n".join(urls) + "\n</urlset>\n")
     write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n")
     write("_headers", "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n\n"
-          "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n")
+          "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n"
+          "/img/*\n  Cache-Control: public, max-age=604800\n")
     for f in ("style.css", "app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png"):
         src = os.path.join(ROOT, f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(OUT, f))
+    shutil.copytree(os.path.join(ROOT, "img"), os.path.join(OUT, "img"))
 
 
 def main():
