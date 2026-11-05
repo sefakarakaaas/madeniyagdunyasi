@@ -293,3 +293,18 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(245,163,0,.35);bo
   .hero-in{padding-block:40px 52px}
 }
 .toast:empty{display:none}
+
+/* GEO Endüstriyel Teknik Tedarik Tablosu */
+.geo-summary{background:#fff;border:1px solid var(--line);border-left:5px solid var(--amber);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;font-size:.98rem;line-height:1.65;color:var(--ink2);box-shadow:var(--shadow)}
+.geo-summary strong{color:var(--ink)}
+.geo-table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.geo-table{width:100%;border-collapse:collapse;text-align:left;font-size:.93rem}
+.geo-table caption{text-align:left;padding:14px 18px;font-weight:800;font-size:1rem;color:var(--ink);background:var(--bg2);border-bottom:1px solid var(--line)}
+.geo-table th,.geo-table td{padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+.geo-table thead th{background:var(--ink);color:#fff;font-weight:700;font-size:.84rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.geo-table tbody tr:nth-child(even){background:#fafbfc}
+.geo-table tbody tr:hover{background:#fff8e6}
+.geo-table tbody th{font-weight:800;color:var(--ink);min-width:200px}
+.geo-table td code,.geo-spec-badge{display:inline-block;background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-family:inherit;font-weight:700;font-size:.85rem;color:var(--ink2)}
+.geo-pack-badge{display:inline-block;background:#fff8e6;border:1px solid var(--amber);border-radius:6px;padding:3px 9px;font-weight:700;font-size:.84rem;color:var(--ink)}
+

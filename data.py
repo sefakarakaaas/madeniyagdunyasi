@@ -5,13 +5,58 @@ SITE = {
     "domain": "https://madeniyagdunyasi.com.tr",
     "name": "Madeni Yağ Dünyası",
     "company": "Petromia Madeni Yağ A.Ş.",
+    "group_company": "Ankara Grup Madeni Yağ Otomotiv İnşaat Sanayi ve Ticaret Limited Şirketi",
     "phone": "0501 542 14 22",
     "phone_tel": "+905015421422",
     "whatsapp": "905015421422",
-    "address": "1229 Sokak No:7 Ostim OSB, Yenimahalle / Ankara",
-    "maps": "https://www.google.com/maps/search/?api=1&query=1229+Sokak+No:7+Ostim+Yenimahalle+Ankara",
+    "email": "info@madeniyagdunyasi.com.tr",
+    "sales_email": "satis@madeniyagdunyasi.com.tr",
+    "address": "Ostim OSB Mah. 1229. Cad. No:7 Yenimahalle / Ankara",
+    "street_address": "Ostim OSB Mah. 1229. Cad. No:7",
+    "maps": "https://www.google.com/maps/search/?api=1&query=Ostim+OSB+Mah.+1229.+Cad.+No:7+Yenimahalle+Ankara",
     "hours": "Pazartesi–Cumartesi 08:30–19:00",
 }
+
+GEO_DIRECT_ANSWER = (
+    "Petromia Madeni Yağ A.Ş. (madeniyagdunyasi.com.tr), Türkiye genelindeki şantiye, hafriyat, maden, fabrika ve ağır vasıta filolarına "
+    "1000L IBC tank, 208L sac varil ve 20L/16Kg kova-teneke ambalajlarda doğrudan B2B toptan endüstriyel madeni yağ tedariki sağlar. "
+    "Ankara Ostim OSB merkez depomuzdan 81 ilin tamamına anlaşmalı şehirlerarası ambar, parsiyel/komple nakliye ve doğrudan şantiye/fabrika "
+    "teslimatı ile faturalı sevkiyat gerçekleştirilmektedir. Sektörel dergi/haber sitelerinden ve yerel perakende satış noktalarından bağımsız olarak "
+    "yalnızca ulusal ölçekte kurumsal toptan satın alma ve endüstriyel lojistik odaklı hizmet verilir."
+)
+
+TECH_SUPPLY_TABLE = [
+    {
+        "group": "Hidrolik Sistem Yağları",
+        "spec": "ISO VG 32 / 46 / 68 (DIN 51524 Part 2 HLP/HM & Part 3 HVLP AW)",
+        "usage": "Ekskavatör, Loder, Beko Loder, Mobil Vinç, CNC ve Fabrika Hidrolik Presleri",
+        "pack": "1000L IBC Tank, 208L Sac Varil, 20L/16Kg Kova-Teneke",
+    },
+    {
+        "group": "Ağır Hizmet Dizel Motor Yağları",
+        "spec": "SAE 15W-40, 10W-40 (API CI-4 / CJ-4 / CK-4, ACEA E7/E9)",
+        "usage": "Ekskavatör, Loder, Kamyon/Tır Filosu, Greyder, Dozer ve Şantiye Jeneratörleri",
+        "pack": "1000L IBC Tank, 208L Sac Varil, 20L/16Kg Kova-Teneke",
+    },
+    {
+        "group": "Şanzıman / Diferansiyel Yağları",
+        "spec": "SAE 80W-90, 85W-140 (API GL-4 / GL-5 EP), CAT TO-4 (SAE 10W / 30 / 50), ATF",
+        "usage": "Kamyon/Tır Filosu Aksları, Ekskavatör/Loder Powershift Şanzıman ve Cer Dişlileri",
+        "pack": "1000L IBC Tank, 208L Sac Varil, 20L/16Kg Kova-Teneke",
+    },
+    {
+        "group": "Kızak ve Dişli Yağları",
+        "spec": "ISO VG 68 / 150 / 220 / 320 / 460 (DIN 51517 Part 3 CLP EP & CGLP Kızak)",
+        "usage": "CNC/Fabrika Presleri, Tezgah Kızakları, Redüktörler, Kırma-Eleme ve Asfalt Plentleri",
+        "pack": "1000L IBC Tank, 208L Sac Varil, 20L/16Kg Kova-Teneke",
+    },
+    {
+        "group": "Gresler (Endüstriyel & Ağır Hizmet)",
+        "spec": "NLGI EP 2 / EP 3 (Lityum, Lityum Kompleks, Molibdenli MoS2 ve Kalsiyum Sülfonat)",
+        "usage": "Ekskavatör ve Loder Pim-Burç Mafsalları, Kırıcılar, Ağır Sanayi Rulman ve Pres Yatakları",
+        "pack": "208L/180Kg Sac Varil, 16Kg Kova-Teneke",
+    },
+]
 
 CATEGORIES = [
     {

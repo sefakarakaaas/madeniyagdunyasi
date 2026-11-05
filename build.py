@@ -12,8 +12,9 @@ from datetime import date
 from html import escape
 from urllib.parse import quote
 
-from data import (BRANDS, CATEGORIES, OIL_FAQ, PROVINCES, PROVINCES_BY_KM,
-                  REGION_NOTES, SECTORS, SITE, ZONES)
+from data import (BRANDS, CATEGORIES, GEO_DIRECT_ANSWER, OIL_FAQ, PROVINCES,
+                  PROVINCES_BY_KM, REGION_NOTES, SECTORS, SITE,
+                  TECH_SUPPLY_TABLE, ZONES)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "dist")
@@ -99,17 +100,17 @@ def chat_widget():
     return f"""<div class="wchat" data-chat>
   <div class="wchat-teaser" data-chat-teaser hidden>
     <button type="button" class="wchat-teaser-x" data-chat-teaser-close aria-label="Kapat">×</button>
-    <b>Petromia Madeni Yağ</b>
-    <span data-chat-teaser-text>Merhaba 👋 Size nasıl yardımcı olabiliriz?</span>
+    <b>{SITE['company']}</b>
+    <span data-chat-teaser-text>Merhaba 👋 Toptan yağ ve sevkiyat için size nasıl yardımcı olabiliriz?</span>
   </div>
   <section class="wchat-panel" data-chat-panel hidden role="dialog" aria-label="WhatsApp ile mesaj gönderin">
     <header class="wchat-head">
       <span class="wchat-avatar">{logo_mark("c", shadow=False)}</span>
-      <span class="wchat-who"><b>Petromia Madeni Yağ</b><small><i class="wchat-online"></i> Çevrimiçi · genellikle birkaç dakikada yanıt verir</small></span>
+      <span class="wchat-who"><b>{SITE['company']}</b><small><i class="wchat-online"></i> B2B Toptan Satış · 0501 542 14 22</small></span>
       <button type="button" class="wchat-x" data-chat-close aria-label="Sohbeti kapat">×</button>
     </header>
     <div class="wchat-body">
-      <div class="wchat-bubble">Merhaba 👋<br>Size nasıl yardımcı olabiliriz? Aşağıdan bir konu seçin veya mesajınızı yazın.<span class="wchat-time" data-chat-time></span></div>
+      <div class="wchat-bubble">Merhaba 👋<br>Şantiye, fabrika veya filonuz için toptan teklif talebinizi aşağıdan seçebilir ya da doğrudan yazabilirsiniz.<span class="wchat-time" data-chat-time></span></div>
       <div class="wchat-options" data-chat-options></div>
     </div>
     <form class="wchat-foot" data-chat-form>
@@ -121,37 +122,118 @@ def chat_widget():
 </div>"""
 
 
+def build_offer_catalog_schema():
+    return {
+        "@context": "https://schema.org",
+        "@type": "OfferCatalog",
+        "@id": SITE["domain"] + "/#offercatalog",
+        "name": "Petromia Madeni Yağ A.Ş. B2B Toptan Endüstriyel ve Ağır Hizmet Madeni Yağ Kataloğu (IBC, Varil, Teneke)",
+        "description": "Şantiye, hafriyat, fabrika ve ağır vasıta filoları için 1000L IBC tank, 208L sac varil ve 20L/16Kg kova-teneke bazında toptan madeni yağ kategorileri.",
+        "url": SITE["domain"] + "/urunler/",
+        "itemListElement": [
+            {
+                "@type": "OfferCatalog",
+                "name": row["group"],
+                "description": f"{row['spec']} — Kullanım Alanı: {row['usage']} — Ambalaj: {row['pack']}",
+                "itemListElement": [
+                    {
+                        "@type": "Offer",
+                        "businessFunction": "http://purl.org/goodrelations/v1#Sell",
+                        "eligibleCustomerType": "http://purl.org/goodrelations/v1#Business",
+                        "areaServed": "TR",
+                        "itemOffered": {
+                            "@type": "Product",
+                            "name": f"Toptan {row['group']} ({row['spec']})",
+                            "description": f"{row['usage']} için {row['pack']} ambalaj seçenekleriyle toptan B2B tedarik ve 81 ile sevkiyat.",
+                            "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
+                        },
+                    }
+                ],
+            }
+            for row in TECH_SUPPLY_TABLE
+        ],
+    }
+
+
 def layout(path, title, description, body, schema=None, active="", chat_topic="", chat_city=""):
     url = SITE["domain"] + url_of(path)
     PAGES.append(url_of(path))
+    postal_address = {
+        "@type": "PostalAddress",
+        "streetAddress": SITE["street_address"],
+        "addressLocality": "Yenimahalle",
+        "addressRegion": "Ankara",
+        "postalCode": "06374",
+        "addressCountry": "TR",
+    }
+    offer_catalog = build_offer_catalog_schema()
     schemas = [{
         "@context": "https://schema.org",
         "@type": "Organization",
         "@id": SITE["domain"] + "/#organization",
-        "name": SITE["name"],
+        "name": f"{SITE['name']} - {SITE['company']}",
         "legalName": SITE["company"],
+        "alternateName": [SITE["name"], SITE["group_company"]],
+        "additionalType": [
+            "https://schema.org/WholesaleStore",
+            "https://www.productontology.org/id/Lubricant",
+            "https://www.productontology.org/id/Industrial_lubricant",
+            "https://www.productontology.org/id/Wholesaling",
+        ],
+        "description": "Petromia Madeni Yağ A.Ş. resmi ulusal B2B toptan endüstriyel madeni yağ, şantiye, hafriyat ve fabrika tedarik merkezi. Ankara Ostim OSB'den 81 ile varil, IBC tank ve teneke sevkiyatı.",
+        "disambiguatingDescription": "madeniyagdunyasi.com.tr bir dergi veya haber sitesi (madeniyagdunyasi.com) ya da yerel perakende noktası değildir; Petromia Madeni Yağ A.Ş.'nin Türkiye geneli B2B toptan endüstriyel madeni yağ satış ve 81 ile şantiye/fabrika sevkiyat platformudur.",
         "url": SITE["domain"] + "/",
         "logo": {"@type": "ImageObject", "url": SITE["domain"] + "/logo.png", "width": 1320, "height": 760},
         "telephone": SITE["phone_tel"],
+        "email": SITE["email"],
+        "address": postal_address,
+        "areaServed": "TR",
+        "naics": "424720",
+        "isicV4": "4661",
+        "contactPoint": [
+            {
+                "@type": "ContactPoint",
+                "telephone": SITE["phone_tel"],
+                "email": SITE["sales_email"],
+                "contactType": "sales",
+                "areaServed": "TR",
+                "availableLanguage": ["tr"],
+            },
+            {
+                "@type": "ContactPoint",
+                "telephone": SITE["phone_tel"],
+                "email": SITE["email"],
+                "contactType": "customer service",
+                "areaServed": "TR",
+                "availableLanguage": ["tr"],
+            },
+        ],
     }, {
         "@context": "https://schema.org",
-        "@type": "Store",
-        "name": SITE["name"],
+        "@type": "WholesaleStore",
+        "@id": SITE["domain"] + "/#wholesalestore",
+        "name": f"{SITE['name']} | {SITE['company']}",
         "legalName": SITE["company"],
+        "alternateName": SITE["group_company"],
+        "additionalType": [
+            "https://www.productontology.org/id/Lubricant",
+            "https://www.productontology.org/id/Industrial_lubricant",
+            "https://www.productontology.org/id/Wholesaling",
+        ],
+        "description": "Şantiye, hafriyat, maden, fabrika ve ağır vasıta filoları için 1000L IBC tank, 208L sac varil ve 20L/16Kg teneke bazında toptan madeni yağ tedarikçisi. Ostim OSB Ankara merkez depodan 81 ile sevkiyat.",
+        "parentOrganization": {"@id": SITE["domain"] + "/#organization"},
         "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
         "url": SITE["domain"] + "/",
         "telephone": SITE["phone_tel"],
-        "priceRange": "₺₺",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "1229 Sokak No:7 Ostim OSB",
-            "addressLocality": "Yenimahalle",
-            "addressRegion": "Ankara",
-            "addressCountry": "TR",
-        },
-        "areaServed": {"@type": "Country", "name": "Türkiye"},
+        "email": SITE["email"],
+        "priceRange": "₺₺₺",
+        "currenciesAccepted": "TRY",
+        "paymentAccepted": "Ticari Fatura, Havale, EFT, Kurumsal Kredi Kartı, Nakit",
+        "address": postal_address,
+        "areaServed": "TR",
         "openingHours": "Mo-Sa 08:30-19:00",
-    }]
+        "hasOfferCatalog": {"@id": SITE["domain"] + "/#offercatalog"},
+    }, offer_catalog]
     if schema:
         schemas.extend(schema if isinstance(schema, list) else [schema])
     schema_html = "\n".join(
@@ -170,9 +252,10 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <title>{escape(title)}</title>
 <meta name="description" content="{escape(description)}">
 <link rel="canonical" href="{url}">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="Petromia Madeni Yağ A.Ş. Kurumsal B2B Bilgi Dosyası (llms.txt)">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="tr_TR">
-<meta property="og:site_name" content="{SITE['name']}">
+<meta property="og:site_name" content="{SITE['name']} - {SITE['company']}">
 <meta property="og:title" content="{escape(title)}">
 <meta property="og:description" content="{escape(description)}">
 <meta property="og:url" content="{url}">
@@ -188,8 +271,9 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <body data-chat-topic="{escape(chat_topic)}" data-chat-city="{escape(chat_city)}">
 <div class="topbar">
   <div class="wrap topbar-in">
-    <span>📍 Ostim / Ankara çıkışlı · 81 ile sevkiyat</span>
+    <span>📍 {SITE['address']} · <b>{SITE['company']}</b> · 81 İle Sevkiyat</span>
     <span class="topbar-links">
+      <a href="mailto:{SITE['email']}">✉️ {SITE['email']}</a>
       <a href="tel:{SITE['phone_tel']}">📞 {SITE['phone']}</a>
       <a href="{wa_link('Merhaba, toptan madeni yağ / yedek parça için bilgi almak istiyorum.')}" target="_blank" rel="noopener">💬 WhatsApp</a>
     </span>
@@ -197,7 +281,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 </div>
 <header class="header">
   <div class="wrap header-in">
-    <a class="logo" href="/" aria-label="{SITE['name']} ana sayfa">{logo_html()}</a>
+    <a class="logo" href="/" aria-label="{SITE['name']} - {SITE['company']} ana sayfa">{logo_html()}</a>
     <button class="menu-btn" aria-label="Menüyü aç" aria-expanded="false" data-menu>☰</button>
     <nav class="nav" data-nav>
       {nav('/', 'Ana Sayfa', 'home')}
@@ -215,8 +299,8 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
   <div class="wrap footer-grid">
     <div>
       <div class="logo logo-footer">{logo_html("f")}</div>
-      <p>İnşaat, yol, hafriyat firmaları ve şantiyeler için toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre tedariki. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat.</p>
-      <p><b>{SITE['company']}</b></p>
+      <p>Şantiye, hafriyat, maden, fabrika ve ağır vasıta filoları için varil, IBC tank ve teneke bazında toptan endüstriyel madeni yağ, hidrolik yağ, dişli yağı ve filtre tedariki. Ankara Ostim OSB merkez depomuzdan Türkiye'nin 81 iline sevkiyat.</p>
+      <p><b>{SITE['company']}</b><br><small style="color:#8b96a5">Grup Şirketimiz: {SITE['group_company']}</small></p>
     </div>
     <div>
       <h4>Ürün Grupları</h4>
@@ -229,13 +313,17 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
     </div>
     <div>
       <h4>İletişim</h4>
+      <p>🏢 <b>{SITE['company']}</b></p>
       <p>📍 {SITE['address']}</p>
       <p>📞 <a href="tel:{SITE['phone_tel']}">{SITE['phone']}</a></p>
+      <p>💬 <a href="{wa_link('Merhaba, toptan teklif almak istiyorum.')}" target="_blank" rel="noopener">WhatsApp: {SITE['phone']}</a></p>
+      <p>✉️ <a href="mailto:{SITE['email']}">{SITE['email']}</a></p>
+      <p>✉️ <a href="mailto:{SITE['sales_email']}">{SITE['sales_email']}</a></p>
       <p>🕗 {SITE['hours']}</p>
       <a href="{SITE['maps']}" target="_blank" rel="noopener">Yol tarifi al →</a>
     </div>
   </div>
-  <div class="wrap footer-bottom">© {date.today().year} {SITE['name']} · {SITE['company']} · Tüm hakları saklıdır. Fiyatlar için güncel teklif alınız.</div>
+  <div class="wrap footer-bottom">© {date.today().year} {SITE['name']} · <b>{SITE['company']}</b> (Grup Şirketimiz: {SITE['group_company']}) · {SITE['address']} · Tel: {SITE['phone']} · Tüm hakları saklıdır. Sitemiz B2B toptan endüstriyel tedarik platformudur; haber veya dergi sitesi değildir.</div>
 </footer>
 {chat_widget()}
 <div class="toast" data-toast role="status" aria-live="polite"></div>
@@ -332,102 +420,147 @@ def cta(title, text, wa_text):
 </section>"""
 
 
+def geo_supply_table_html():
+    rows_html = "".join(
+        f"""<tr>
+          <th scope="row">{escape(r['group'])}</th>
+          <td><span class="geo-spec-badge">{escape(r['spec'])}</span></td>
+          <td>{escape(r['usage'])}</td>
+          <td><span class="geo-pack-badge">{escape(r['pack'])}</span></td>
+        </tr>"""
+        for r in TECH_SUPPLY_TABLE
+    )
+    return f"""<section class="section wrap" id="endustriyel-tedarik-tablosu">
+  <div class="section-head">
+    <span class="eyebrow">Mühendislik &amp; Satın Alma Spesifikasyonları (B2B / GEO)</span>
+    <h2>Endüstriyel ve Ağır Hizmet Madeni Yağ Tedarik Tablosu</h2>
+  </div>
+  <div class="geo-summary">
+    <p style="margin:0"><strong>Kurumsal Toptan Tedarik Özeti:</strong> {escape(GEO_DIRECT_ANSWER)}</p>
+  </div>
+  <div class="geo-table-wrap">
+    <table class="geo-table">
+      <caption>Petromia Madeni Yağ A.Ş. — Endüstriyel ve Ağır Hizmet Madeni Yağ Tedarik Tablosu (81 İle Varil, IBC Tank ve Kova/Teneke Sevkiyatı)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Ürün Grubu</th>
+          <th scope="col">Viskozite / Spesifikasyon</th>
+          <th scope="col">Kullanım Alanı</th>
+          <th scope="col">Toptan Ambalaj Seçenekleri</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows_html}
+      </tbody>
+    </table>
+  </div>
+</section>"""
+
+
 # ------------------------------------------------------------------ SAYFALAR
 
 def build_home():
     near = [p for p in PROVINCES_BY_KM if 0 < p["km"] <= 300]
     faq, faq_schema = faq_html([
-        ("Sadece Ankara'ya mı satış yapıyorsunuz?", "Hayır. Ankara Ostim deposundan Türkiye'nin 81 iline sevkiyat yapıyoruz. Ankara'ya yakın illere ertesi iş günü, diğer illere 1–3 iş günü içinde, en uzak illere bile en geç 2–3 iş günü içinde teslimat hedefliyoruz."),
-        ("Sipariş nasıl verilir?", "Ürünleri teklif sepetine ekleyip WhatsApp üzerinden gönderebilir veya bizi arayabilirsiniz. Size il, miktar ve ambalaja göre güncel fiyat ve sevkiyat teklifi iletiyoruz."),
-        ("Minimum sipariş miktarı var mı?", "Toptan odaklı çalışıyoruz; teneke, bidon, varil ve IBC bazında satış yapıyoruz. Küçük miktarlı acil ihtiyaçlarınız için de bizi arayabilirsiniz."),
-        ("Sevkiyat hangi yöntemle yapılıyor?", "İlinize ve sipariş hacmine göre anlaşmalı kargo, şehirlerarası ambar, parsiyel ya da komple nakliye ile gönderim yapıyoruz. Yakın illerde kendi aracımızla teslimat da planlanabilir."),
-        ("Kamu ihalesi yapan firmalara faturalı satış var mı?", "Evet. Tüm satışlar faturalıdır. Kamu projelerinde çalışan taşeron firmalar için düzenli tedarik ve toplu sipariş planı oluşturuyoruz."),
-        ("İş makinesi parçası için neyi bilmem gerekiyor?", "Makine marka-modeli ve mümkünse parça numarası yeterli. Parçanın fotoğrafını WhatsApp'tan göndermeniz de doğru ürünü bulmamızı hızlandırır."),
+        ("Şantiyeye ve fabrikalara varil ve IBC bazında doğrudan sevkiyat yapıyor musunuz?",
+         "Evet. Petromia Madeni Yağ A.Ş. olarak Türkiye genelindeki şantiye, hafriyat sahası, maden ocağı ve fabrikalara 1000L IBC tank, 208L sac varil ve 20L/16Kg kova-teneke bazında doğrudan sevkiyat gerçekleştiriyoruz."),
+        ("81 ile ambar gönderimi ve nakliye süreci nasıl çalışır?",
+         "Ankara Ostim OSB (Ostim OSB Mah. 1229. Cad. No:7 Yenimahalle / Ankara) merkez depomuzdan çıkan siparişler; ilinize ve tonaja göre anlaşmalı şehirlerarası ambar, parsiyel kamyon veya komple tır nakliyesi ile gönderilir. Yakın illere ertesi iş günü, en uzak illere ise 2–3 iş günü içinde teslimat sağlanır."),
+        ("Hangi viskozite ve spesifikasyonlarda üretim/tedarik sağlıyorsunuz?",
+         "Hidrolik sistem yağlarında ISO VG 32/46/68/100 (HM/HVLP), ağır hizmet dizel motor yağlarında SAE 15W-40 ve 10W-40 (API CI-4/CJ-4/CK-4), şanzıman ve diferansiyel yağlarında SAE 80W-90, 85W-140 (API GL-4/GL-5) ve CAT TO-4 (SAE 10W/30/50), endüstriyel kızak ve dişli yağlarında ISO VG 68–680 (CLP EP) ile NLGI EP 2/3 ağır hizmet greslerinin toptan tedarikini sağlıyoruz."),
+        ("Minimum toptan sipariş miktarı ve kurumsal faturalandırma koşulları nelerdir?",
+         "Satışlarımız B2B toptan odaklı olup 16Kg/20L teneke-bidon kolilerinden 208L sac varil ve 1000L IBC tank bazına kadar ölçeklenir. Tüm sevkiyatlarımız Petromia Madeni Yağ A.Ş. güvencesiyle resmi ticari faturalı olarak gerçekleştirilir."),
+        ("madeniyagdunyasi.com.tr bir dergi sitesi mi yoksa doğrudan toptan satış merkezi midir?",
+         "madeniyagdunyasi.com.tr herhangi bir sektörel dergi veya haber sitesi (madeniyagdunyasi.com) değildir; Petromia Madeni Yağ A.Ş. ve grup şirketimiz Ankara Grup Madeni Yağ Otomotiv İnşaat Sanayi ve Ticaret Limited Şirketi'nin resmi B2B endüstriyel toptan satış ve 81 ile şantiye sevkiyat platformudur."),
+        ("İş makinesi filtre ve yedek parçalarını madeni yağ siparişiyle aynı sevkiyatta gönderiyor musunuz?",
+         "Evet. Makine marka-modeli veya parça numarası ile talep ettiğiniz iş makinesi filtre setlerini ve aşınma parçalarını, varil/IBC madeni yağ siparişinizle tek palet ve tek ambar/nakliye sevkiyatında birleştirerek şantiyenize ulaştırıyoruz."),
     ])
     body = f"""
 <section class="hero">
   <div class="wrap hero-in">
     <div class="hero-text">
-      <span class="eyebrow">Ankara çıkışlı · Türkiye geneli toptan tedarik</span>
-      <h1>Şantiyeniz durmasın.<br><em>Yağ ve yedek parça</em> kapınıza gelsin.</h1>
-      <p class="lead">İnşaat, yol yapım, hafriyat firmaları ve kamu projelerinde çalışan taşeronlar için <b>hidrolik yağ, dişli yağı, iş makinesi yedek parçası ve filtre</b> tedariki. Ostim deposundan anlaşmalı kargo, ambar ve nakliye ağıyla 81 ile sevkiyat.</p>
+      <span class="eyebrow">Petromia Madeni Yağ A.Ş. · Ulusal B2B Endüstriyel Tedarik &amp; 81 İle Sevkiyat</span>
+      <h1>Toptan Madeni Yağ Tedarikçisi:<br><em>Varil, IBC Tank ve Şantiye</em> Sevkiyatı</h1>
+      <p class="lead">Şantiye, hafriyat, maden, fabrika ve ağır vasıta filoları için <b>1000L IBC tank, 208L sac varil ve 20L/16Kg teneke</b> bazında toptan hidrolik yağ, ağır hizmet dizel motor yağı, dişli yağı, endüstriyel gres, iş makinesi yedek parçası ve filtre tedariki. Ankara Ostim OSB merkez depomuzdan anlaşmalı ambar ve nakliye ağıyla <b>81 ile doğrudan sevkiyat</b>.</p>
       <div class="hero-btns">
-        <a class="btn" href="/urunler/">Ürünleri İncele</a>
-        <a class="btn btn-wa" href="{wa_link('Merhaba, şantiyemiz için toptan teklif almak istiyoruz.')}" target="_blank" rel="noopener">{WA_SVG} Hızlı Teklif</a>
+        <a class="btn" href="/urunler/">Toptan Ürünleri İncele</a>
+        <a class="btn btn-wa" href="{wa_link('Merhaba, şantiyemiz/fabrikamız için varil ve IBC bazında toptan teklif almak istiyoruz.')}" target="_blank" rel="noopener">{WA_SVG} B2B Hızlı Teklif Al</a>
       </div>
       <ul class="hero-points">
-        <li>✔ Varil, IBC ve teneke bazında toptan</li>
-        <li>✔ Yakın illere ertesi gün sevkiyat</li>
-        <li>✔ Yağ + filtre + parça tek sevkiyatta</li>
+        <li>✔ 1000L IBC, 208L Varil ve 20L/16Kg Teneke Toptan Satış</li>
+        <li>✔ Ostim OSB Merkez Depodan 81 İle Ambar &amp; Nakliye</li>
+        <li>✔ Şantiye, Hafriyat, Fabrika ve Filolara Doğrudan Teslimat</li>
       </ul>
     </div>
     <form class="finder card" data-finder>
-      <h2>İlinize sevkiyat süresini görün</h2>
-      <label>Şantiyenizin bulunduğu il
+      <h2>81 İle Şantiye &amp; Fabrika Sevkiyat Süresi</h2>
+      <label>Şantiyenizin veya fabrikanızın bulunduğu il
         <select data-province-select required>
           <option value="">— İl seçiniz —</option>
           {''.join(f'<option value="{p["slug"]}">{p["plate"]:02d} · {escape(p["name"])}</option>' for p in sorted(PROVINCES, key=lambda x: x["plate"]))}
         </select>
       </label>
       <div class="finder-result" data-finder-result hidden></div>
-      <button class="btn btn-block" type="submit">İl Sayfasına Git →</button>
-      <p class="muted">Her il için sevkiyat yöntemi, tahmini süre ve ürün listesi ayrı sayfada.</p>
+      <button class="btn btn-block" type="submit">İl Sevkiyat Sayfasına Git →</button>
+      <p class="muted">Her il için ambar/nakliye yöntemi, tahmini teslim süresi ve toptan ürün listesi ayrı sayfada.</p>
     </form>
   </div>
 </section>
 
 <section class="stats wrap">
-  <div><b>81</b><span>İle sevkiyat</span></div>
-  <div><b>4</b><span>Ana ürün grubu</span></div>
-  <div><b>{len(near)}</b><span>İlde ertesi gün sevkiyat</span></div>
-  <div><b>2–3 gün</b><span>En uzak ile teslim</span></div>
+  <div><b>81 İl</b><span>Ulusal B2B Sevkiyat</span></div>
+  <div><b>IBC &amp; Varil</b><span>Endüstriyel Toptan Ambalaj</span></div>
+  <div><b>{len(near)} İl</b><span>Ertesi İş Günü Teslim</span></div>
+  <div><b>2–3 Gün</b><span>En Uzak Şantiyeye Teslim</span></div>
 </section>
 
+{geo_supply_table_html()}
+
 <section class="section wrap">
-  <div class="section-head"><span class="eyebrow">Ürün grupları</span><h2>Makine parkınızın ihtiyacı tek yerden</h2></div>
+  <div class="section-head"><span class="eyebrow">Toptan Ürün Grupları</span><h2>Şantiye, Fabrika ve Filolar İçin Endüstriyel Çözümler</h2></div>
   {category_cards()}
 </section>
 
-<section class="brands-strip wrap" aria-label="Satışını yaptığımız markalar">
-  <span>Satışını yaptığımız markalar</span>
+<section class="brands-strip wrap" aria-label="Toptan tedarikini yaptığımız markalar">
+  <span>Toptan tedarikini yaptığımız markalar</span>
   <ul>{''.join(f'<li>{escape(b)}</li>' for b in BRANDS)}</ul>
 </section>
 
 <section class="section alt">
   <div class="wrap">
-    <div class="section-head"><span class="eyebrow">Nasıl çalışıyoruz?</span><h2>Siparişten şantiyeye 4 adım</h2></div>
+    <div class="section-head"><span class="eyebrow">B2B Lojistik Süreci</span><h2>Toptan Siparişten Şantiye ve Fabrika Teslimatına 4 Adım</h2></div>
     <ol class="steps">
-      <li><b>Teklif isteyin</b><span>Sepete ekleyin veya WhatsApp'tan ürün, miktar ve il bilgisini iletin.</span></li>
-      <li><b>Fiyat + nakliye teklifi</b><span>İlinize en uygun kargo, ambar veya nakliye seçeneğiyle toplam teklifi iletiyoruz.</span></li>
-      <li><b>Ostim'de hazırlık</b><span>Onay sonrası ürünler Ankara depomuzda paketlenir, faturası kesilir.</span></li>
-      <li><b>Sevkiyat ve takip</b><span>Ürün yola çıkar; takip numarası veya araç bilgisi size iletilir.</span></li>
+      <li><b>B2B Teklif İsteyin</b><span>Sepete ekleyin veya WhatsApp'tan ürün spesifikasyonu, ambalaj (IBC/Varil/Teneke), miktar ve il bilgisini iletin.</span></li>
+      <li><b>Toptan Fiyat + Nakliye</b><span>İlinize en uygun şehirlerarası ambar, parsiyel veya komple araç nakliye seçeneğiyle toplam teklifi iletiyoruz.</span></li>
+      <li><b>Ostim OSB'de Hazırlık</b><span>Onay sonrası ürünler Ankara Ostim OSB depomuzda paletlenir, Petromia Madeni Yağ A.Ş. ticari faturası kesilir.</span></li>
+      <li><b>81 İle Sevkiyat ve Takip</b><span>Ürünler ambar veya nakliye aracına teslim edilir; irsaliye ve araç/plaka bilgisi satın alma biriminize iletilir.</span></li>
     </ol>
   </div>
 </section>
 
 <section class="section wrap">
-  <div class="section-head"><span class="eyebrow">Öncelikli sevkiyat bölgesi</span><h2>Ankara'ya yakın illere ertesi gün sevkiyat</h2>
-  <p>Ankara'ya yaklaşık 300 km mesafedeki illere siparişler ertesi iş günü yola çıkar. <a href="/iller/">Tüm illeri gör →</a></p></div>
+  <div class="section-head"><span class="eyebrow">81 İle Sevkiyat Ağı</span><h2>Ankara Ostim'den Yakın İllere Ertesi Gün, Tüm Türkiye'ye Hızlı Teslimat</h2>
+  <p>Ankara Ostim OSB merkez depomuzdan yaklaşık 300 km mesafedeki illere siparişler ertesi iş günü ulaşır. <a href="/iller/">81 ilin tamamını ve sevkiyat sürelerini gör →</a></p></div>
   <div class="chips">{''.join(province_chip(p) for p in near)}</div>
 </section>
 
 <section class="section alt">
   <div class="wrap">
-    <div class="section-head"><span class="eyebrow">Kimlere hizmet veriyoruz?</span><h2>Sahada çalışan firmaların tedarikçisi</h2></div>
+    <div class="section-head"><span class="eyebrow">Kurumsal Müşteri Profilimiz</span><h2>B2B Toptan Tedarik Sağladığımız Sektörler</h2></div>
     {sectors_html()}
   </div>
 </section>
 
 <section class="section wrap narrow">
-  <div class="section-head"><span class="eyebrow">Sık sorulanlar</span><h2>Merak edilenler</h2></div>
+  <div class="section-head"><span class="eyebrow">Sık Sorulan B2B Sorular</span><h2>Toptan Madeni Yağ ve Şantiye Sevkiyatı Hakkında Merak Edilenler</h2></div>
   {faq}
 </section>
-{cta('Toplu siparişiniz mi var?', 'Makine listenizi gönderin, yıllık yağ ve filtre ihtiyacınızı birlikte planlayalım.', 'Merhaba, makine parkımız için toplu yağ ve filtre teklifi almak istiyoruz.')}
+{cta('Şantiye veya Fabrikanız İçin Toptan Teklif Alın', 'Makine parkı veya fabrika ihtiyaç listenizi gönderin; IBC, varil ve teneke bazında en avantajlı B2B teklifi sunalım.', 'Merhaba, makine parkımız / fabrikamız için varil ve IBC bazında toplu yağ ve filtre teklifi almak istiyoruz.')}
 """
     write("index.html", layout(
         "index.html",
-        "Toptan Madeni Yağ, Hidrolik Yağ ve İş Makinesi Parçası | Madeni Yağ Dünyası",
-        "İnşaat, yol ve hafriyat firmaları için toptan hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre. Ankara Ostim'den 81 ile hızlı sevkiyat. WhatsApp'tan teklif alın.",
+        "Toptan Madeni Yağ Tedarikçisi | Varil, IBC ve Şantiye Sevkiyatı - Petromia",
+        "Petromia Madeni Yağ A.Ş. güvencesiyle şantiye, hafriyat, fabrika ve filolar için varil, IBC tank ve teneke bazında toptan madeni yağ satışı. Ankara Ostim'den 81 ile sevkiyat.",
         body, schema=faq_schema, active="home"))
 
 
@@ -435,10 +568,11 @@ def build_products():
     crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Ürünler", None)])
     body = f"""{crumbs}
 <section class="page-head wrap">
-  <h1>Toptan Ürün Gruplarımız</h1>
-  <p class="lead">Şantiye ve iş makinesi odaklı dört ana ürün grubunda, teneke adetten IBC tanka kadar toptan tedarik. Ürünleri sepete ekleyin, WhatsApp'tan tek mesajla teklif alın.</p>
+  <h1>Toptan Endüstriyel Madeni Yağ, Filtre ve Yedek Parça Gruplarımız</h1>
+  <p class="lead">Petromia Madeni Yağ A.Ş. güvencesiyle şantiye, hafriyat, fabrika ve filolar için 1000L IBC tank, 208L sac varil ve 20L/16Kg kova-teneke bazında toptan tedarik. Ürünleri sepete ekleyin, WhatsApp'tan tek mesajla B2B teklif alın.</p>
 </section>
 <section class="section wrap">{category_cards()}</section>
+{geo_supply_table_html()}
 """
     for c in CATEGORIES:
         body += f"""<section class="section wrap" id="{c['slug']}">
@@ -591,7 +725,7 @@ def build_province(p):
     service = {
         "@context": "https://schema.org", "@type": "Service",
         "name": f"{name} Toptan Madeni Yağ ve İş Makinesi Yedek Parça Tedariki",
-        "provider": {"@type": "Store", "name": SITE["name"], "telephone": SITE["phone_tel"]},
+        "provider": {"@type": "WholesaleStore", "name": f"{SITE['name']} - {SITE['company']}", "legalName": SITE["company"], "telephone": SITE["phone_tel"]},
         "areaServed": {"@type": "AdministrativeArea", "name": name},
         "serviceType": "Toptan madeni yağ, hidrolik yağ, dişli yağı, iş makinesi yedek parça ve filtre satışı",
     }
@@ -724,32 +858,34 @@ def build_contact():
     crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("İletişim", None)])
     options = "".join(f'<option>{escape(p["name"])}</option>' for p in sorted(PROVINCES, key=lambda x: x["plate"]))
     body = f"""{crumbs}
-<section class="page-head wrap"><h1>İletişim</h1>
-<p class="lead">Toptan sipariş, fiyat teklifi ve sevkiyat planı için bize ulaşın. En hızlı dönüş WhatsApp üzerinden sağlanır.</p></section>
+<section class="page-head wrap"><h1>İletişim ve Kurumsal Bilgiler</h1>
+<p class="lead">Petromia Madeni Yağ A.Ş. güvencesiyle toptan sipariş, varil/IBC fiyat teklifi ve 81 ile sevkiyat planı için bize ulaşın. En hızlı dönüş WhatsApp ve kurumsal iletişim hatlarımız üzerinden sağlanır.</p></section>
 <section class="section wrap two-col">
   <div class="card contact-list">
     <h2>{SITE['company']}</h2>
-    <p>📍 <b>Adres</b><br>{SITE['address']}</p>
-    <p>📞 <b>Telefon</b><br><a href="tel:{SITE['phone_tel']}">{SITE['phone']}</a></p>
-    <p>💬 <b>WhatsApp</b><br><a href="{wa_link('Merhaba, bilgi almak istiyorum.')}" target="_blank" rel="noopener">{SITE['phone']}</a></p>
-    <p>🕗 <b>Çalışma saatleri</b><br>{SITE['hours']}</p>
+    <p>🏢 <b>Resmi Unvan</b><br>{SITE['company']}<br><small class="muted">Grup Şirketimiz: <i>{SITE['group_company']}</i></small></p>
+    <p>📍 <b>Adres (Merkez &amp; Lojistik Depo)</b><br>{SITE['address']}</p>
+    <p>📞 <b>Telefon &amp; WhatsApp</b><br><a href="tel:{SITE['phone_tel']}">{SITE['phone']}</a> (<a href="tel:{SITE['phone_tel']}">{SITE['phone_tel']}</a>)</p>
+    <p>💬 <b>WhatsApp Toptan Satış Hattı</b><br><a href="{wa_link('Merhaba, toptan madeni yağ tedariki hakkında bilgi almak istiyorum.')}" target="_blank" rel="noopener">{SITE['phone']}</a></p>
+    <p>✉️ <b>Kurumsal E-Posta</b><br><a href="mailto:{SITE['email']}">{SITE['email']}</a><br><a href="mailto:{SITE['sales_email']}">{SITE['sales_email']}</a></p>
+    <p>🕗 <b>Çalışma Saatleri</b><br>{SITE['hours']}</p>
     <a class="btn" href="{SITE['maps']}" target="_blank" rel="noopener">📍 Yol Tarifi Al</a>
   </div>
   <div class="card">
-    <h2>Mesaj gönderin</h2>
+    <h2>B2B Toptan Fiyat Teklifi İsteyin</h2>
     <form data-quick-form>
       <label>Firma adı<input name="firma" required autocomplete="organization"></label>
       <label>İl<select name="il" required><option value="">— İl seçiniz —</option>{options}</select></label>
-      <label>İlçe / Şantiye<input name="ilce"></label>
-      <label>Mesajınız<textarea name="not" rows="4" required></textarea></label>
+      <label>İlçe / Şantiye / Fabrika<input name="ilce"></label>
+      <label>Mesajınız (Ürün / Viskozite / IBC-Varil-Teneke Miktarı)<textarea name="not" rows="4" required></textarea></label>
       <button class="btn btn-wa btn-block" type="submit">{WA_SVG} WhatsApp ile Gönder</button>
     </form>
   </div>
 </section>
 """
     write("iletisim/index.html", layout(
-        "iletisim/index.html", "İletişim | Madeni Yağ Dünyası – Ostim / Ankara",
-        f"Madeni Yağ Dünyası iletişim: {SITE['address']}. Telefon ve WhatsApp: {SITE['phone']}.",
+        "iletisim/index.html", f"İletişim | {SITE['company']} – Ostim OSB / Ankara",
+        f"{SITE['company']} iletişim: {SITE['address']}. Telefon ve WhatsApp: {SITE['phone']} ({SITE['phone_tel']}). E-posta: {SITE['email']}.",
         body, schema=crumb_schema, active="iletisim"))
 
 
@@ -769,10 +905,10 @@ def build_meta():
         urls.append(f"  <url><loc>{SITE['domain']}{path}</loc><lastmod>{TODAY}</lastmod><priority>{prio}</priority></url>")
     write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
           + "\n".join(urls) + "\n</urlset>\n")
-    write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n")
+    write("robots.txt", f"User-agent: *\nAllow: /\n\nSitemap: {SITE['domain']}/sitemap.xml\n# LLMs.txt: {SITE['domain']}/llms.txt\n")
     write("_headers", "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n\n"
           "/style.css\n  Cache-Control: public, max-age=86400\n/app.js\n  Cache-Control: public, max-age=86400\n")
-    for f in ("style.css", "app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png"):
+    for f in ("style.css", "app.js", "favicon.svg", "logo.svg", "logo.png", "favicon.ico", "favicon-192.png", "apple-touch-icon.png", "llms.txt"):
         src = os.path.join(ROOT, f)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(OUT, f))
