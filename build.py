@@ -122,7 +122,66 @@ def chat_widget():
 </div>"""
 
 
+def build_product_schema(item, page_url):
+    """Yalnızca fiyatı olan ürünler için geçerli Offer içeren Product şeması üretir.
+    Fiyatı olmayan ürünlerde Product şeması basılmaz, sahte puan veya yorum eklenmez.
+    """
+    raw_price = item.get("price")
+    if raw_price is None or str(raw_price).strip() == "":
+        return None
+    price_val = f"{float(str(raw_price).replace(',', '.')):.2f}"
+    brands = item.get("brands") or BRANDS
+    brand_schema = (
+        {"@type": "Brand", "name": brands[0]}
+        if len(brands) == 1
+        else [{"@type": "Brand", "name": b} for b in brands]
+    )
+    return {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": item["name"],
+        "description": f"{item.get('spec', '')} — {item.get('use', '')}".strip(" —"),
+        "brand": brand_schema,
+        "offers": {
+            "@type": "Offer",
+            "price": price_val,
+            "priceCurrency": "TRY",
+            "availability": "https://schema.org/InStock",
+            "url": page_url,
+            "priceValidUntil": item.get("priceValidUntil", "2027-12-31"),
+        },
+    }
+
+
 def build_offer_catalog_schema():
+    catalog_items = []
+    for row in TECH_SUPPLY_TABLE:
+        cat_entry = {
+            "@type": "OfferCatalog",
+            "name": row["group"],
+            "description": f"{row['spec']} — Kullanım Alanı: {row['usage']} — Ambalaj: {row['pack']}",
+            "url": SITE["domain"] + "/urunler/",
+        }
+        if row.get("price") is not None and str(row.get("price")).strip() != "":
+            price_val = f"{float(str(row['price']).replace(',', '.')):.2f}"
+            cat_entry["itemListElement"] = [
+                {
+                    "@type": "Product",
+                    "name": f"Toptan {row['group']} ({row['spec']})",
+                    "description": f"{row['usage']} için {row['pack']} ambalaj seçenekleriyle toptan B2B tedarik ve 81 ile sevkiyat.",
+                    "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
+                    "offers": {
+                        "@type": "Offer",
+                        "price": price_val,
+                        "priceCurrency": "TRY",
+                        "availability": "https://schema.org/InStock",
+                        "url": SITE["domain"] + "/urunler/",
+                        "priceValidUntil": row.get("priceValidUntil", "2027-12-31"),
+                    },
+                }
+            ]
+        catalog_items.append(cat_entry)
+
     return {
         "@context": "https://schema.org",
         "@type": "OfferCatalog",
@@ -130,28 +189,7 @@ def build_offer_catalog_schema():
         "name": "Petromia Madeni Yağ A.Ş. B2B Toptan Endüstriyel ve Ağır Hizmet Madeni Yağ Kataloğu (IBC, Varil, Teneke)",
         "description": "Şantiye, hafriyat, fabrika ve ağır vasıta filoları için 1000L IBC tank, 208L sac varil ve 20L/16Kg kova-teneke bazında toptan madeni yağ kategorileri.",
         "url": SITE["domain"] + "/urunler/",
-        "itemListElement": [
-            {
-                "@type": "OfferCatalog",
-                "name": row["group"],
-                "description": f"{row['spec']} — Kullanım Alanı: {row['usage']} — Ambalaj: {row['pack']}",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "businessFunction": "http://purl.org/goodrelations/v1#Sell",
-                        "eligibleCustomerType": "http://purl.org/goodrelations/v1#Business",
-                        "areaServed": "TR",
-                        "itemOffered": {
-                            "@type": "Product",
-                            "name": f"Toptan {row['group']} ({row['spec']})",
-                            "description": f"{row['usage']} için {row['pack']} ambalaj seçenekleriyle toptan B2B tedarik ve 81 ile sevkiyat.",
-                            "brand": [{"@type": "Brand", "name": b} for b in BRANDS],
-                        },
-                    }
-                ],
-            }
-            for row in TECH_SUPPLY_TABLE
-        ],
+        "itemListElement": catalog_items,
     }
 
 
@@ -580,17 +618,27 @@ def build_products():
   <div class="products">{''.join(product_card(i, c) for i in c['items'])}</div>
 </section>"""
     body += cta("Aradığınız ürünü bulamadınız mı?", "Listede olmayan viskozite, marka veya parça için bize yazın.", "Merhaba, listede olmayan bir ürün için bilgi almak istiyorum: ")
+    all_product_schemas = [
+        s
+        for c in CATEGORIES
+        for it in c["items"]
+        if (s := build_product_schema(it, f"{SITE['domain']}/urunler/{c['slug']}/"))
+    ]
     write("urunler/index.html", layout(
         "urunler/index.html",
         "Ürünler: Hidrolik Yağ, Dişli Yağı, Yedek Parça, Filtre | Madeni Yağ Dünyası",
         "Hidrolik yağ (HM 32/46/68), dişli yağı (80W-90, 85W-140, EP 220), TO-4 şanzıman yağı, kova dişi, pim-burç, hidrolik hortum ve iş makinesi filtreleri toptan.",
-        body, schema=crumb_schema, active="urunler", chat_topic="ürünleriniz"))
+        body, schema=[crumb_schema] + all_product_schemas, active="urunler", chat_topic="ürünleriniz"))
 
     for c in CATEGORIES:
+        cat_url = f"{SITE['domain']}/urunler/{c['slug']}/"
         crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("Ürünler", "/urunler/"), (c["name"], None)])
         item_list = {"@context": "https://schema.org", "@type": "ItemList", "name": c["name"],
                      "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": it["name"]}
                                          for i, it in enumerate(c["items"])]}
+        cat_product_schemas = [
+            s for it in c["items"] if (s := build_product_schema(it, cat_url))
+        ]
         others = "".join(f'<a class="chip" href="/urunler/{o["slug"]}/">{escape(o["name"])}</a>'
                          for o in CATEGORIES if o is not c)
         body = f"""{crumbs}
@@ -615,7 +663,7 @@ def build_products():
             f"urunler/{c['slug']}/index.html",
             f"Toptan {c['name']} | Ankara'dan 81 İle Sevkiyat | Madeni Yağ Dünyası",
             c["desc"] + " Ankara Ostim'den Türkiye geneline toptan satış.",
-            body, schema=[crumb_schema, item_list], active="urunler", chat_topic=c["name"]))
+            body, schema=[crumb_schema, item_list] + cat_product_schemas, active="urunler", chat_topic=c["name"]))
 
 
 def dative(name):
