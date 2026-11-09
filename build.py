@@ -41,38 +41,8 @@ ICONS = {
 }
 
 def logo_mark(uid="h", shadow=True):
-    """Endüstriyel çark + parlak altın-kehribar madeni yağ damlası (favicon.svg / logo.svg ile aynı)."""
-    d = "M128,42 C164,95 188,130 188,158 C188,192 161,218 128,218 C95,218 68,192 68,158 C68,130 92,95 128,42 Z"
-    gear = (
-        "M114,12 H142 L148,32 A96,96 0 0,1 172,42 L191,29 L211,49 L198,68 "
-        "A96,96 0 0,1 208,92 L228,98 V126 L208,132 A96,96 0 0,1 198,156 "
-        "L211,175 L191,195 L172,182 A96,96 0 0,1 148,192 L142,212 H114 "
-        "L108,192 A96,96 0 0,1 84,182 L65,195 L45,175 L58,156 A96,96 0 0,1 48,132 "
-        "L28,126 V98 L48,92 A96,96 0 0,1 58,68 L45,49 L65,29 L84,42 A96,96 0 0,1 108,32 Z"
-    )
-    return (
-        f'<svg class="logo-svg" viewBox="0 0 256 256" aria-hidden="true"><defs>'
-        f'<linearGradient id="gg-{uid}" x1="0%" y1="0%" x2="100%" y2="100%">'
-        '<stop offset="0%" stop-color="#263346"/><stop offset="50%" stop-color="#151D28"/>'
-        '<stop offset="100%" stop-color="#0B0F17"/></linearGradient>'
-        f'<linearGradient id="rg-{uid}" x1="0%" y1="0%" x2="100%" y2="100%">'
-        '<stop offset="0%" stop-color="#FDE047"/><stop offset="50%" stop-color="#F59E0B"/>'
-        '<stop offset="100%" stop-color="#B45309"/></linearGradient>'
-        f'<linearGradient id="db-{uid}" x1="25%" y1="10%" x2="80%" y2="95%">'
-        '<stop offset="0%" stop-color="#FEF08A"/><stop offset="35%" stop-color="#FACC15"/>'
-        '<stop offset="70%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#B45309"/></linearGradient>'
-        f'<radialGradient id="dr-{uid}" cx="62%" cy="68%" r="45%">'
-        '<stop offset="0%" stop-color="#FEF08A" stop-opacity="0.75"/>'
-        '<stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/></radialGradient>'
-        f'<clipPath id="dc-{uid}"><path d="{d}"/></clipPath></defs>'
-        f'<path fill="url(#gg-{uid})" stroke="#334155" stroke-width="3" stroke-linejoin="round" d="{gear}" transform="translate(0, 16)"/>'
-        f'<circle cx="128" cy="128" r="86" fill="#0F172A" stroke="url(#rg-{uid})" stroke-width="7"/>'
-        f'<g clip-path="url(#dc-{uid})">'
-        f'<path d="{d}" fill="url(#db-{uid})"/><path d="{d}" fill="url(#dr-{uid})"/>'
-        '<ellipse cx="104" cy="134" rx="14" ry="34" transform="rotate(-20 104 134)" fill="#FFFFFF" fill-opacity="0.72"/>'
-        '<ellipse cx="146" cy="190" rx="11" ry="6" transform="rotate(-15 146 190)" fill="#FEF9C3" fill-opacity="0.55"/>'
-        '</g></svg>'
-    )
+    """Gemini tarafından çizilen MYD-2 çelik 'M' monogram + altın yağ damlası logosu."""
+    return '<img class="logo-svg" src="/logo.png?v=3" alt="Madeni Yağ Dünyası" width="54" height="54" decoding="async">'
 
 
 def logo_html(uid="h"):
@@ -305,11 +275,11 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
 <meta property="og:description" content="{escape(description)}">
 <meta property="og:url" content="{url}">
 <meta name="theme-color" content="#11161d">
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
-<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
-<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png?v=2">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
-<meta property="og:image" content="{SITE['domain']}/logo.png?v=2">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico?v=3" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png?v=3">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<meta property="og:image" content="{SITE['domain']}/logo.png?v=3">
 <link rel="stylesheet" href="/style.css?v={CSS_V}">
 {schema_html}
 </head>
