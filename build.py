@@ -12,8 +12,8 @@ from datetime import date
 from html import escape
 from urllib.parse import quote
 
-from data import (BRANDS, CATEGORIES, GEO_DIRECT_ANSWER, OIL_FAQ, PROVINCES,
-                  PROVINCES_BY_KM, REGION_NOTES, SECTORS, SITE,
+from data import (BLOG_POSTS, BRANDS, CATEGORIES, GEO_DIRECT_ANSWER, OIL_FAQ,
+                  PROVINCES, PROVINCES_BY_KM, REGION_NOTES, SECTORS, SITE,
                   TECH_SUPPLY_TABLE, ZONES)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -325,6 +325,7 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
       {nav('/', 'Ana Sayfa', 'home')}
       {nav('/urunler/', 'Ürünler', 'urunler')}
       {nav('/iller/', 'Sevkiyat İlleri', 'iller')}
+      {nav('/blog/', 'Blog', 'blog')}
       {nav('/iletisim/', 'İletişim', 'iletisim')}
       <a class="nav-cart" href="/teklif/">🛒 Teklif Sepeti <span class="cart-count" data-cart-count>0</span></a>
     </nav>
@@ -341,8 +342,9 @@ def layout(path, title, description, body, schema=None, active="", chat_topic=""
       <p><b>{SITE['company']}</b><br><small style="color:#8b96a5">Grup Şirketimiz: {SITE['group_company']}</small></p>
     </div>
     <div>
-      <h4>Ürün Grupları</h4>
+      <h4>Ürün Grupları &amp; Rehber</h4>
       {''.join(f'<a href="/urunler/{c["slug"]}/">{c["name"]}</a>' for c in CATEGORIES)}
+      <a href="/blog/"><b>B2B Teknik Blog →</b></a>
     </div>
     <div>
       <h4>Yakın İller</h4>
@@ -586,6 +588,16 @@ def build_home():
   <div class="wrap">
     <div class="section-head"><span class="eyebrow">Kurumsal Müşteri Profilimiz</span><h2>B2B Toptan Tedarik Sağladığımız Sektörler</h2></div>
     {sectors_html()}
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head row">
+    <div><span class="eyebrow">Mühendislik &amp; Satın Alma Rehberleri</span><h2>B2B Endüstriyel Madeni Yağ ve Şantiye Blogu</h2></div>
+    <a href="/blog/">Tüm rehberleri gör →</a>
+  </div>
+  <div class="products">
+    {''.join(f'<article class="product"><span class="tag">{escape(b["category"])}</span><h3><a href="/blog/{b["slug"]}/" style="text-decoration:none;color:var(--ink)">{escape(b["title"])}</a></h3><p>{escape(b["summary"])}</p><p style="margin-top:auto;padding-top:8px"><a href="/blog/{b["slug"]}/" style="font-weight:700;color:var(--amber-d);text-decoration:none">Rehberi oku →</a></p></article>' for b in BLOG_POSTS)}
   </div>
 </section>
 
@@ -937,6 +949,162 @@ def build_contact():
         body, schema=crumb_schema, active="iletisim"))
 
 
+def build_blog():
+    crumbs, crumb_schema = breadcrumbs([("Ana Sayfa", "/"), ("B2B Teknik Blog", None)])
+    cards_html = "".join(
+        f"""<article class="product">
+  <span class="tag">{escape(post['category'])} · {escape(post['read_time'])}</span>
+  <h3><a href="/blog/{post['slug']}/" style="text-decoration:none;color:var(--ink)">{escape(post['title'])}</a></h3>
+  <p>{escape(post['summary'])}</p>
+  <p style="margin-top:auto;padding-top:10px"><a href="/blog/{post['slug']}/" style="font-weight:700;color:var(--amber-d);text-decoration:none">Teknik Rehberi Oku →</a></p>
+</article>"""
+        for post in BLOG_POSTS
+    )
+    blog_schema = {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": f"{SITE['name']} - B2B Endüstriyel Madeni Yağ ve Şantiye Bakım Rehberi",
+        "url": f"{SITE['domain']}/blog/",
+        "inLanguage": "tr-TR",
+        "publisher": {"@id": f"{SITE['domain']}/#organization"},
+        "blogPost": [
+            {
+                "@type": "BlogPosting",
+                "headline": p["title"],
+                "description": p["summary"],
+                "datePublished": p["date"],
+                "url": f"{SITE['domain']}/blog/{p['slug']}/",
+            }
+            for p in BLOG_POSTS
+        ],
+    }
+    body = f"""{crumbs}
+<section class="page-head wrap">
+  <span class="eyebrow">Mühendislik, Satın Alma ve Lojistik Rehberleri</span>
+  <h1>B2B Endüstriyel Madeni Yağ ve Şantiye Tedarik Blogu</h1>
+  <p class="lead">Petromia Madeni Yağ A.Ş. mühendislik ve lojistik ekibi tarafından şantiye şefleri, bakım mühendisleri ve fabrika satın alma müdürleri için hazırlanan teknik rehberler.</p>
+</section>
+<section class="section wrap">
+  <div class="products">{cards_html}</div>
+</section>
+{geo_supply_table_html()}
+{cta('Şantiye veya Fabrikanız İçin B2B Teklif Alın', 'İhtiyacınız olan viskozite, ambalaj (IBC/Varil/Teneke) ve il bilgisini paylaşın; aynı gün fiyat + nakliye teklifi sunalım.', 'Merhaba, blog yazınızı inceledim. Şantiyemiz/fabrikamız için toptan madeni yağ teklifi almak istiyorum.')}
+"""
+    write(
+        "blog/index.html",
+        layout(
+            "blog/index.html",
+            f"B2B Endüstriyel Madeni Yağ ve Şantiye Rehberi (Blog) | {SITE['company']}",
+            "Şantiye, hafriyat ve fabrikalar için 1000L IBC tank ve 208L varil maliyet analizi, HM/HVLP hidrolik yağ seçimi, CLP dişli yağları ve 81 ile sevkiyat rehberleri.",
+            body,
+            schema=[crumb_schema, blog_schema],
+            active="blog",
+            chat_topic="B2B teknik rehber ve toptan teklif",
+        ),
+    )
+
+    for post in BLOG_POSTS:
+        post_path = f"blog/{post['slug']}/index.html"
+        post_url = f"{SITE['domain']}/blog/{post['slug']}/"
+        p_crumbs, p_crumb_schema = breadcrumbs([
+            ("Ana Sayfa", "/"),
+            ("B2B Teknik Blog", "/blog/"),
+            (post["title"], None),
+        ])
+        toc_items = "".join(
+            f'<li><a href="#{s["id"]}">{escape(s["heading"])}</a></li>'
+            for s in post["sections"]
+        )
+        sections_html = ""
+        for s in post["sections"]:
+            paras = "".join(f"<p>{escape(p)}</p>" for p in s.get("paragraphs", []))
+            tbl_html = ""
+            if "table" in s:
+                ths = "".join(f'<th scope="col">{escape(h)}</th>' for h in s["table"]["headers"])
+                trs = "".join(
+                    "<tr>" + "".join(f"<td>{escape(cell)}</td>" for cell in row) + "</tr>"
+                    for row in s["table"]["rows"]
+                )
+                tbl_html = f"""<div class="geo-table-wrap" style="margin:18px 0 24px">
+  <table class="geo-table">
+    <thead><tr>{ths}</tr></thead>
+    <tbody>{trs}</tbody>
+  </table>
+</div>"""
+            bullets_html = ""
+            if "bullets" in s:
+                bullets_html = (
+                    '<ul style="margin:0 0 18px 20px;line-height:1.7">'
+                    + "".join(f"<li>{escape(b)}</li>" for b in s["bullets"])
+                    + "</ul>"
+                )
+            sections_html += f"""<section id="{s['id']}" style="margin-top:32px">
+  <h2>{escape(s['heading'])}</h2>
+  {paras}
+  {tbl_html}
+  {bullets_html}
+</section>"""
+
+        faq_block, faq_schema = faq_html(post["faqs"])
+        other_posts = "".join(
+            f'<a class="chip" href="/blog/{o["slug"]}/">{escape(o["title"])}</a>'
+            for o in BLOG_POSTS
+            if o["slug"] != post["slug"]
+        )
+        posting_schema = {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post["title"],
+            "description": post["summary"],
+            "datePublished": post["date"],
+            "dateModified": post["date"],
+            "mainEntityOfPage": post_url,
+            "image": f"{SITE['domain']}/logo.png",
+            "inLanguage": "tr-TR",
+            "author": {
+                "@type": "Organization",
+                "name": SITE["company"],
+                "url": f"{SITE['domain']}/",
+            },
+            "publisher": {"@id": f"{SITE['domain']}/#organization"},
+        }
+        post_body = f"""{p_crumbs}
+<article class="section wrap narrow">
+  <span class="eyebrow">{escape(post['category'])} · 📅 {escape(post['date'])} · ⏱ {escape(post['read_time'])}</span>
+  <h1>{escape(post['title'])}</h1>
+  <div class="geo-summary" style="margin-top:18px">
+    <p style="margin:0"><strong>Yönetici / Satın Alma Özeti:</strong> {escape(post['lead'])}</p>
+  </div>
+  <nav class="card" aria-label="İçindekiler" style="margin:22px 0">
+    <strong style="display:block;margin-bottom:8px">İçindekiler</strong>
+    <ol style="margin:0;padding-left:20px;line-height:1.8">{toc_items}<li><a href="#sss">Sık Sorulan Sorular</a></li></ol>
+  </nav>
+  {sections_html}
+  <section id="sss" style="margin-top:36px">
+    <h2>Sık Sorulan B2B Sorular</h2>
+    {faq_block}
+  </section>
+  <section style="margin-top:36px">
+    <h2>Diğer B2B Teknik Rehberlerimiz</h2>
+    <div class="chips">{other_posts}</div>
+  </section>
+</article>
+{cta('Bu Konuda Şantiye veya Fabrikanız İçin Teklif Alın', 'IBC tank, 208L sac varil ve 20L/16Kg teneke bazında toptan fiyat ve 81 ile nakliye planı için uzman ekibimize ulaşın.', 'Merhaba, "' + post['title'] + '" yazınızı okudum. Toptan fiyat ve sevkiyat teklifi almak istiyorum.')}
+"""
+        write(
+            post_path,
+            layout(
+                post_path,
+                f"{post['title']} | {SITE['company']}",
+                post["summary"],
+                post_body,
+                schema=[p_crumb_schema, posting_schema, faq_schema],
+                active="blog",
+                chat_topic=post["title"],
+            ),
+        )
+
+
 def build_404():
     body = """<section class="page-head wrap narrow center"><h1>Sayfa bulunamadı</h1>
 <p class="lead">Aradığınız sayfa taşınmış veya kaldırılmış olabilir.</p>
@@ -969,6 +1137,7 @@ def main():
     build_home()
     build_products()
     build_provinces()
+    build_blog()
     build_cart()
     build_contact()
     build_404()

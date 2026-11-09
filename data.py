@@ -366,3 +366,242 @@ OIL_FAQ = [
     ("Atık yağlar ne yapılmalı?",
      "Atık yağlar toprağa, kanalizasyona veya suya dökülemez. Atık Yağların Kontrolü Yönetmeliği kapsamında ayrı biriktirilip lisanslı toplama firmalarına teslim edilmelidir. {il} içindeki lisanslı toplayıcılar için bize danışabilirsiniz."),
 ]
+
+# Ulusal B2B Endüstriyel Tedarik & 81 İle Şantiye/Fabrika Sevkiyatı Odaklı 5 SEO/GEO Blog Yazısı
+BLOG_POSTS = [
+    {
+        "slug": "ibc-tank-mi-208-litre-varil-mi-santiye-ve-fabrikalar-icin-toptan-madeni-yag-maliyet-analizi",
+        "title": "1000L IBC Tank mı, 208L Sac Varil mi? Şantiye ve Fabrikalar İçin Toptan Madeni Yağ Maliyet Analizi",
+        "category": "B2B Satın Alma & Maliyet",
+        "date": "2026-11-09",
+        "read_time": "5 dk okuma",
+        "summary": "Şantiye, maden ocağı ve üretim fabrikalarında 1000L IBC tank, 208L sac varil ve 20L teneke ambalajların litre birim maliyeti, fire oranı ve nakliye verimliliği açısından karşılaştırması.",
+        "lead": "Yıllık madeni yağ tüketimi 2.000 litrenin üzerinde olan şantiyeler, hafriyat filoları ve endüstriyel üretim tesisleri için doğru ambalaj seçimi; litre başına maliyeti %8 ile %18 arasında düşürürken depolama ve dolum firelerini minimuma indirir.",
+        "sections": [
+            {
+                "id": "ambalaj-karsilastirma",
+                "heading": "1. Endüstriyel Ambalaj Tiplerinin Teknik ve Lojistik Karşılaştırması",
+                "paragraphs": [
+                    "Petromia Madeni Yağ A.Ş. olarak Türkiye'nin 81 iline gerçekleştirdiğimiz B2B sevkiyatlarda en sık karşılaştığımız satın alma sorusu; hidrolik yağ (ISO VG 46/68) ve ağır hizmet motor yağlarının (15W-40 / 10W-40) 208L sac varilde mi yoksa 1000L IBC tankta mı alınması gerektiğidir.",
+                    "1000 litrelik tek bir IBC tank, yaklaşık 5 adet 208 litrelik sac varile veya 50 adet 20 litrelik bidona eşdeğer hacim sunar. Paletli çelik kafes yapısı sayesinde forkliftle tek seferde indirilir ve alt tahliye vanası ile temiz dolum imkânı verir."
+                ],
+                "table": {
+                    "headers": ["Kriter", "1000L IBC Tank", "208L / 180Kg Sac Varil", "20L Bidon / 16Kg Teneke"],
+                    "rows": [
+                        ["Litre Birim Maliyeti", "En Ekonomik (Referans Baz)", "Orta (+%4 – %7)", "Yüksek (+%12 – %18)"],
+                        ["Tır / Kamyon Yükleme Verimi", "1 Palet = 1000 Litre (Maksimum)", "1 Palet = 4 Varil (832 Litre)", "1 Palet = 24–36 Adet (480–720L)"],
+                        ["Ambalaj İçi Kalıntı Firesi", "%0,2'nin altında (Eğimli taban)", "%1 – %1,5 (Varil dibi kalıntısı)", "%1,5 – %2,5 (Çoklu bidon firesi)"],
+                        ["İdeal Kullanım Yeri", "Sabit Fabrika, Büyük Baraj/Maden Şantiyesi", "Mobil Şantiye, Hafriyat ve Tır Garajları", "Saha Bakım Aracı, Kabin İçi Tamamlama"]
+                    ]
+                }
+            },
+            {
+                "id": "hangi-durumda-hangisi",
+                "heading": "2. Hangi İşletme Hangi Ambalajı Tercih Etmeli?",
+                "paragraphs": [
+                    "Sabit bir bakım atölyesi, plastik enjeksiyon/pres hattı veya 15+ iş makinesinin çalıştığı maden ve yol şantiyelerinde HM 46 / HM 68 hidrolik yağları 1000L IBC tank ile tedarik etmek hem satın alma faturasını hem de ambar/nakliye navlununu düşürür.",
+                    "Buna karşılık makinelerin dağınık lokasyonlarda çalıştığı yol yapım ve hafriyat projelerinde 208L sac varil + el/havalı varil pompası kombinasyonu sahada daha esnek hareket kabiliyeti sağlar. 20L bidon ve 16Kg kova ürünler ise operatör kabininde veya mobil servis aracında acil ekleme (tamamlama) amacıyla bulundurulmalıdır."
+                ],
+                "bullets": [
+                    "Aylık 1.000L ve üzeri tek tip yağ (ör. ISO VG 46 Hidrolik) tüketen tesisler: 1000L IBC Tank.",
+                    "Farklı viskoziteleri (15W-40, 80W-90, TO-4 30, HLP 68) aynı anda stoklayan şantiye depoları: 208L Sac Varil.",
+                    "Ağır hizmet lityum kompleks veya EP 2 gres kullanımı: Merkezi yağlama varsa 180Kg Varil, gres pompası ile saha yağlamasında 15Kg–16Kg Kova."
+                ]
+            },
+            {
+                "id": "nakliye-birlestirme",
+                "heading": "3. Karma Palet ve 81 İle Sevkiyat Avantajı",
+                "paragraphs": [
+                    "Ankara Ostim OSB merkez depomuzdan çıkan sevkiyatlarda tek tip ambalaj zorunluluğu yoktur. Örneğin 1 adet 1000L IBC hidrolik yağın yanına; 2 varil 15W-40 dizel motor yağı, 1 varil 80W-90 dişli yağı, 5 kova EP2 gres ve makine parkınızın filtre bakım setlerini tek sevkiyatta birleştirerek şehirlerarası ambar veya parsiyel nakliye maliyetinizi minimize ediyoruz."
+                ]
+            }
+        ],
+        "faqs": [
+            ("1000L IBC tank şantiyede nasıl boşaltılır?",
+             "IBC tankın alt kısmında standart 2 inç kelebek veya küresel tahliye vanası bulunur. Doğrudan yerçekimi ile veya elektrikli/havalı transfer pompası bağlanarak makineye ya da ara servis tankına temiz şekilde aktarılır."),
+            ("Varil ve IBC siparişlerinde minimum alım adedi var mı?",
+             "B2B toptan satış modelimizde tek 1 adet 208L varil veya 1 adet 1000L IBC tanktan komple tır bazına kadar 81 ile faturalı sevkiyat yapılmaktadır.")
+        ]
+    },
+    {
+        "slug": "agir-hizmet-is-makinelerinde-hidrolik-yag-secimi-hm-46-hm-68-ve-hvlp-spesifikasyonlari",
+        "title": "Ağır Hizmet İş Makinelerinde Hidrolik Yağ Seçimi: ISO VG 46, VG 68 ve HVLP Spesifikasyonları",
+        "category": "Hidrolik Sistem Mühendisliği",
+        "date": "2026-11-09",
+        "read_time": "6 dk okuma",
+        "summary": "Ekskavatör, loder, dozer ve mobil vinçlerde DIN 51524 Part 2 (HLP/HM) ile Part 3 (HVLP) hidrolik yağların viskozite indeksi, pompa koruması ve iklim koşullarına göre teknik seçimi.",
+        "lead": "Ağır iş makinelerinde hidrolik pompa, ana kontrol valfi (MCV) ve silindir keçelerinde yaşanan arızaların %70'inden fazlası yanlış viskozite seçimi veya termal kararlılığı düşük hidrolik sıvılardan kaynaklanır.",
+        "sections": [
+            {
+                "id": "din-51524-standartlari",
+                "heading": "1. DIN 51524 Part 2 (HM/HLP) ve Part 3 (HV/HVLP) Farkı Nedir?",
+                "paragraphs": [
+                    "Endüstriyel ve mobil hidrolik sistemlerde kullanılan yağlar uluslararası DIN 51524 ve ISO 11158 standartlarına göre sınıflandırılır. HM (DIN 51524-2 HLP) sınıfı yağlar çinko bazlı aşınma önleyici (AW) katkılar içerir ve sabit sıcaklıktaki fabrika makineleri ile ılıman iklim şantiyeleri için standart çözümdür.",
+                    "HV (DIN 51524-3 HVLP) sınıfı yağlar ise yüksek viskozite indeksine (VI > 140) sahiptir. Sabah eksi derecelerde başlayan ve öğlen yüksek çalışma sıcaklığına ulaşan açık saha şantiyelerinde yağın soğukta kalınlaşıp kavitasyon yapmasını, sıcakta ise incelip basınç kaybı yaşatmasını önler."
+                ],
+                "table": {
+                    "headers": ["Hidrolik Sınıfı", "ISO Viskozite (40°C)", "Viskozite İndeksi (Tipik)", "Önerilen Şantiye / İklim Koşulu"],
+                    "rows": [
+                        ["HM 32 / HLP 32", "32 mm²/s", "95 – 105", "Doğu Anadolu kış şartları, soğuk ilk çalıştırma ve hassas servo valfler"],
+                        ["HM 46 / HLP 46", "46 mm²/s", "98 – 108", "Türkiye geneli 4 mevsim standart ekskavatör, beko loder ve fabrika presleri"],
+                        ["HM 68 / HLP 68", "68 mm²/s", "95 – 105", "Akdeniz, Güneydoğu yaz sıcakları, ağır kaya kırıcı ve yüksek basınçlı sistemler"],
+                        ["HV 46 / HVLP 46", "46 mm²/s", "140 – 160", "Gece-gündüz sıcaklık farkı yüksek baraj, maden ve yüksek rakımlı şantiyeler"],
+                        ["HV 68 / HVLP 68", "68 mm²/s", "140 – 155", "Sürekli tam yükte çalışan ağır ekskavatör, asfalt finişeri ve mobil vinçler"]
+                    ]
+                }
+            },
+            {
+                "id": "is-makinesi-pompa-koruma",
+                "heading": "2. Ekskavatör ve Loderlerde Basınç Kaybı ve Kavitasyon Nasıl Önlenir?",
+                "paragraphs": [
+                    "CAT, Komatsu, Volvo, Hitachi, JCB ve Hidromek gibi modern iş makinelerinde eksenel pistonlu ana pompalar 320–380 bar basınç altında çalışır. Yağın sudan ayrışma (demülsibilite) ve hava bırakma kabiliyeti düşükse sistemde mikro hava kabarcıkları oluşur ve pompa plakalarında aşınma başlar.",
+                    "Şantiyelerde hidrolik kırıcı (ataşman) kullanılan ekskavatörlerde yağ sıcaklığı standart kazıya göre 15–20 °C daha yüksek seyreder. Bu makinelerde yaz döneminde ISO VG 68 veya dört mevsim HVLP 46/68 tercih edilmesi pompa ömrünü korur."
+                ],
+                "bullets": [
+                    "Hidrolik yağ değişiminde emiş süzgeci ve hidrolik dönüş filtresi mutlaka yeni filtreyle değiştirilmelidir.",
+                    "Farklı baz yağ ve katkı paketine sahip HM ile HV sınıfı yağlar tank içinde birbirine karıştırılmamalıdır.",
+                    "1000L IBC ve 208L varil alımlarında kapak mühürleri kontrol edilmeli, dolum sırasında temiz filtreli pompa kullanılmalıdır."
+                ]
+            }
+        ],
+        "faqs": [
+            ("Ekskavatörde 46 numara yerine 68 numara hidrolik yağ kullanılır mı?",
+             "Yaz aylarında yüksek çevre sıcaklığında (35°C+) ve ağır kırıcı çalışmalarında 68 numara yağ film kalınlığını koruyarak iç kaçakları azaltır; ancak kış aylarında soğuk bölgelerde 68 numara yağ ilk çalıştırmada pompayı zorlayacağı için 46 numara veya HV 46 tercih edilmelidir."),
+            ("Hangi markaların varil ve IBC hidrolik yağlarını tedarik ediyorsunuz?",
+             "Petromia Madeni Yağ A.Ş. olarak Mobil, Shell, Castrol, Opet, Lukoil, Alpet ve Borax markalarının HM/HLP ve HV/HVLP serisi hidrolik yağlarını 208L varil, 1000L IBC ve 20L bidon bazında 81 ile sevk ediyoruz.")
+        ]
+    },
+    {
+        "slug": "fabrika-presleri-cnc-tezgahlari-ve-reduktorler-icin-endustriyel-disli-ve-kizak-yagi-rehberi",
+        "title": "Fabrika Presleri, CNC Tezgahları ve Redüktörler İçin Endüstriyel Dişli (CLP) ve Kızak Yağı Rehberi",
+        "category": "Fabrika & OSB Tedariki",
+        "date": "2026-11-09",
+        "read_time": "5 dk okuma",
+        "summary": "Organize sanayi bölgelerindeki üretim tesisleri, kırma-eleme plentleri ve CNC talaşlı imalat fabrikaları için ISO VG 150/220/320/460 CLP dişli yağları ve ISO VG 68 kızak yağları seçim kılavuzu.",
+        "lead": "Fabrikalarda plansız duruşların önüne geçmek; kapalı dişli kutularında (redüktörlerde), CNC takım tezgahı kızaklarında ve eksantrik/hidrolik preslerde doğru ISO VG viskozite sınıfı ile EP (Aşırı Basınç) katkı teknolojisini kullanmakla başlar.",
+        "sections": [
+            {
+                "id": "clp-endustriyel-disli",
+                "heading": "1. Kapalı Redüktörlerde DIN 51517 Part 3 (CLP) Dişli Yağları",
+                "paragraphs": [
+                    "Çimento, maden kırma-eleme elekleri, konveyör bant tahrikleri, haddehaneler ve fabrika karıştırıcı redüktörleri yüksek şok yükler altında çalışır. Otomotiv tipi (80W-90) dişli yağları yerine, endüstriyel kapalı dişli kutuları için özel üretilen DIN 51517-3 CLP sınıfı kükürt-fosfor EP katkılı yağlar (ISO VG 150, 220, 320, 460, 680) kullanılmalıdır.",
+                    "Bu yağlar dişli yüzeylerinde mikro-karıncalanmayı (micropitting) engeller, yüksek sıcaklıklarda oksidasyona direnç gösterir ve suya/neme karşı rulmanları korur."
+                ],
+                "table": {
+                    "headers": ["Ürün Grubu", "Viskozite / Norm", "Endüstriyel Uygulama Alanı", "Toptan Ambalaj"],
+                    "rows": [
+                        ["Endüstriyel Dişli Yağı CLP", "ISO VG 150 / 220 / 320", "Konveyör, vinç, mikser ve standart sanayi redüktörleri", "20L Bidon, 208L Varil, 1000L IBC"],
+                        ["Ağır Hizmet Dişli Yağı CLP", "ISO VG 460 / 680", "Kırma-eleme tesisi, değirmen, asfalt plenti ve yavaş dönen ağır dişliler", "20L Bidon, 208L Varil"],
+                        ["Takım Tezgahı Kızak Yağı", "ISO VG 68 / VG 220 (CGLP)", "CNC işleme merkezleri, torna, freze ve taşlama tezgahı yatay/dikey kızakları", "20L Bidon, 208L Varil"],
+                        ["Vidalı & Pistonlu Kompresör", "ISO VG 46 / VG 68 / VG 100", "Fabrika basınçlı hava kompresörleri ve pnömatik hatlar", "20L Bidon, 208L Varil"]
+                    ]
+                }
+            },
+            {
+                "id": "cnc-kizak-ve-kesme",
+                "heading": "2. CNC Tezgahlarında Kızak Yağı (ISO VG 68) ve Stick-Slip Önleme",
+                "paragraphs": [
+                    "Talaşlı imalat yapan fabrikalarda CNC tezgahlarının hassas yüzey kalitesi verebilmesi için kızakların düşük hızlarda takılmadan (stick-slip yapmadan) kayması gerekir. Özel yapışkanlık (tackiness) katkılı ISO VG 68 (yatay kızaklar) ve ISO VG 220 (dikey kızaklar) kızak yağları, suyla karıştırılan bor yağları (kesme sıvıları) tarafından kızak yüzeyinden yıkanıp atılmaz ve emülsiyon banyosunun bozulmasını önler."
+                ],
+                "bullets": [
+                    "Yatay CNC kızakları ve merkezi yağlama üniteleri için: ISO VG 68 CGLP kızak yağı.",
+                    "Dikey kolonlu ağır işleme merkezleri ve pres kızakları için: ISO VG 220 CGLP kızak yağı.",
+                    "Fabrika genel bakımında tek fatura ve tek palet sevkiyatla hidrolik, kızak, redüktör ve kompresör yağlarını Ostim OSB depomuzdan 81 ile gönderiyoruz."
+                ]
+            }
+        ],
+        "faqs": [
+            ("Redüktör yağında ISO VG 220 ile VG 320 arasında nasıl seçim yapılır?",
+             "Redüktör üreticisinin (SEW, Flender, Yılmaz Redüktör, Nord vb.) etiketindeki ISO VG değeri esastır. Genel kural olarak ortam sıcaklığı yüksek ve devir sayısı düşük/tork yüksek ise VG 320 veya VG 460; standart devir ve kapalı fabrika ortamında ise VG 220 tercih edilir."),
+            ("Organize Sanayi Bölgelerindeki fabrikalara düzenli periyodik sevkiyat yapıyor musunuz?",
+             "Evet. Türkiye genelindeki tüm OSB'lerde yer alan fabrikalara aylık veya üç aylık çerçeve sipariş planıyla IBC tank ve varil bazında düzenli tedarik sağlıyoruz.")
+        ]
+    },
+    {
+        "slug": "maden-hafriyat-ve-baraj-santiyelerinde-250-500-1000-saat-is-makinesi-yag-ve-filtre-bakim-plani",
+        "title": "Maden, Hafriyat ve Baraj Şantiyelerinde 250 / 500 / 1000 Saat İş Makinesi Yağ ve Filtre Bakım Planı",
+        "category": "Şantiye & Filo Bakımı",
+        "date": "2026-11-09",
+        "read_time": "6 dk okuma",
+        "summary": "Ekskavatör, kaya kamyonu, loder ve dozer parklarında çalışma saatine göre motor yağı (15W-40), şanzıman (TO-4), diferansiyel (80W-90/85W-140) ve filtre seti tedarik planlaması.",
+        "lead": "Şantiyede çalışan bir ekskavatör veya loderin tek bir gün yatması, bakım maliyetinin onlarca katı iş kaybına yol açar. Yağları ve iş makinesi filtre setlerini çalışma saati periyotlarına göre toplu stoklamak şantiye sürekliliğinin anahtarıdır.",
+        "sections": [
+            {
+                "id": "calisma-saati-tablosu",
+                "heading": "1. Çalışma Saatine Göre Standart Şantiye Bakım Matrisi",
+                "paragraphs": [
+                    "Ağır tozlu maden ocakları, baraj gövde dolguları ve kentsel dönüşüm hafriyat sahalarında iş makineleri yüksek devir ve yük altında çalışır. Makine üreticilerinin (CAT, Komatsu, Volvo, Hitachi, JCB, Hidromek) bakım kılavuzlarına göre şantiye satın alma birimlerinin stokta hazır tutması gereken temel ürünler şunlardır:"
+                ],
+                "table": {
+                    "headers": ["Bakım Periyodu", "Değişen Yağ Grubu", "Değişen Filtre & Parça Grubu", "Önerilen Şantiye Stoğu"],
+                    "rows": [
+                        ["Her 250 Saat", "Ağır Hizmet Dizel Motor Yağı (15W-40 CI-4 / 10W-40 CK-4)", "Motor Yağ Filtresi, Yakıt ve Su Ayırıcı Separatör Filtre, Dış Hava Filtresi", "208L Varil Motor Yağı + Makine Başı 2 Takım Filtre Seti"],
+                        ["Her 500 Saat", "Motor Yağı + Kule Dönüş / Cer Dişli Kontrolü", "250 Saat Seti + İç/Dış Hava Filtresi + Hidrolik Pilot/Dönüş Filtresi", "208L Varil 15W-40 + 80W-90 / 85W-140 Dişli Yağı"],
+                        ["Her 1000 Saat", "Powershift Şanzıman & Diferansiyel Yağları (CAT TO-4 SAE 30/50, 85W-140)", "Şanzıman Filtresi, Hidrolik Emiş ve Dönüş Filtreleri, Kabin Filtresi", "208L Varil TO-4 30/50 + Tam Periyodik Bakım Seti"],
+                        ["Her 2000–3000 Saat", "Ana Hidrolik Sistem Yağı (ISO VG 46 / VG 68 / HVLP)", "Tüm Hidrolik Filtreler, Havalandırma (Breather) Filtresi, Silindir Keçe Kontrolü", "1000L IBC Tank veya Çoklu Varil Hidrolik Yağ"]
+                    ]
+                }
+            },
+            {
+                "id": "to4-ve-filtre-birlestirme",
+                "heading": "2. Neden Yağ, Filtre ve Aşınma Parçaları Tek Sevkiyatta Alınmalı?",
+                "paragraphs": [
+                    "Şantiyelerin en büyük operasyonel zaman kaybı; motor ve hidrolik yağını ayrı bir tedarikçiden, yağ/yakıt/hidrolik filtrelerini ayrı bir parçacıdan, kova dişi ve pim-burçları ise üçüncü bir firmadan temin etmeye çalışmaktır. Bu durum hem 3 ayrı kargo/ambar ücreti doğurur hem de parç 리가 eksik geldiğinde makinenin bakım için beklemesine neden olur.",
+                    "Petromia Madeni Yağ A.Ş. olarak makine parkınızın marka-model listesini (ör. 3 adet CAT 336, 2 adet Komatsu PC300, 2 adet Hidromek 102B) aldığımızda; 250/500/1000 saatlik filtre bakım setlerini varil/IBC yağ siparişinizle aynı palet üzerinde birleştirip tek faturayla şantiyenize sevk ediyoruz."
+                ]
+            }
+        ],
+        "faqs": [
+            ("Dozer ve loder şanzımanında neden 15W-40 motor yağı yerine TO-4 yağ kullanılmalıdır?",
+             "Powershift şanzımanlar ve ıslak fren diskleri özel sürtünme katsayısı gerektirir. Motor yağlarındaki sürtünme azaltıcı katkılar ıslak frenlerin kaydırmasına ve debriyaj plakalarının yanmasına yol açar; bu nedenle mutlaka CAT TO-4 onaylı SAE 10W, SAE 30 veya SAE 50 yağ kullanılmalıdır."),
+            ("Makine seri numarası ile filtre seti hazırlıyor musunuz?",
+             "Evet. Şantiyenizdeki makinelerin marka, model ve motor/şasi bilgisini WhatsApp hattımıza ilettiğinizde, her makine için etiketlenmiş komple bakım filtre kolileri hazırlıyoruz.")
+        ]
+    },
+    {
+        "slug": "81-ile-toptan-madeni-yag-sevkiyati-ambar-parsiyel-ve-komple-tir-nakliyesinde-satin-alma-rehberi",
+        "title": "81 İle Toptan Madeni Yağ Sevkiyatı: Ambar, Parsiyel ve Komple Tır Nakliyesinde Satın Alma Rehberi",
+        "category": "Ulusal B2B Lojistik",
+        "date": "2026-11-09",
+        "read_time": "5 dk okuma",
+        "summary": "Ankara Ostim OSB lojistik merkezimizden Türkiye'nin 81 ilindeki şantiye ve fabrikalara varil, IBC tank ve paletli teneke sevkiyatında navlun optimizasyonu ve teslimat süreleri.",
+        "lead": "Endüstriyel madeni yağ satın almasında ürün fiyatı kadar belirleyici olan ikinci kalem lojistik (navlun) maliyetidir. Türkiye'nin karayolu kavşağı olan Ankara Ostim OSB'den yapılan çıkışlar, 81 ilin tamamına en hızlı ve en ekonomik erişimi sağlar.",
+        "sections": [
+            {
+                "id": "sevkiyat-modelleri",
+                "heading": "1. Sipariş Tonajına Göre 3 Temel Sevkiyat Modeli",
+                "paragraphs": [
+                    "Petromia Madeni Yağ A.Ş. merkez deposu (Ostim OSB Mah. 1229. Cad. No:7 Yenimahalle / Ankara), şehirlerarası nakliye ambarlarına ve ana otoyol bağlantılarına dakikalar mesafededir. Siparişinizin ağırlığına ve aciliyetine göre en düşük birim navlun maliyetini şu 3 modelle kurguluyoruz:"
+                ],
+                "table": {
+                    "headers": ["Sevkiyat Yöntemi", "İdeal Sipariş Hacmi", "Teslimat Süresi (Ankara Çıkışlı)", "Lojistik Avantajı"],
+                    "rows": [
+                        ["Şehirlerarası Ambar", "5–15 Teneke/Kova veya 1–4 Adet 208L Varil", "Yakın iller: Ertesi iş günü / Uzak iller: 2–3 iş günü", "Parça başı en ekonomik şehirlerarası taşıma maliyeti"],
+                        ["Parsiyel Kamyon / Kamyonet", "1–4 Adet 1000L IBC veya 4–16 Adet Varil (Paletli)", "1 – 2 iş günü içinde doğrudan şantiye/fabrika kapısına", "Aktarmasız taşıma, şantiye sahasına doğrudan indirme"],
+                        ["Komple Tır / Kamyon", "15–24 Ton (Çoklu IBC Tank ve Tam Palet Varil)", "Yükleme günü çıkış, ertesi gün teslim", "Litre başına minimum navlun, büyük projeler için toplu stok"]
+                    ]
+                }
+            },
+            {
+                "id": "teslimat-ve-guvenlik",
+                "heading": "2. Paletleme, Sızdırmazlık ve Resmi Evrak Süreci",
+                "paragraphs": [
+                    "Ağır tonajlı sıvı sevkiyatlarında en önemli risk nakliye esnasında devrilme veya ambalaj hasarıdır. Depomuzdan çıkan tüm 208L varil ve 20L/16Kg teneke siparişleri ısıl işlem görmüş sağlam paletler üzerine dizilir, çemberlenir ve çok katmanlı streç film ile sabitlenir.",
+                    "Sevkiyat araç plakası, şoför iletişim numarası, e-İrsaliye ve e-Fatura belgeleri araç yola çıktığı anda satın alma ve şantiye depo sorumlunuza WhatsApp ve kurumsal e-posta üzerinden iletilir."
+                ],
+                "bullets": [
+                    "İç Anadolu, Batı Karadeniz ve Doğu Marmara (Konya, Kayseri, Eskişehir, Bolu, Karabük, Çorum, Kırıkkale, Aksaray vb.): Ertesi iş günü teslimat.",
+                    "İstanbul, İzmir, Bursa, Adana, Mersin, Antalya, Samsun, Gaziantep, Trabzon: 1–2 iş günü içinde hızlı sevkiyat.",
+                    "Doğu ve Güneydoğu Anadolu şantiyeleri (Erzurum, Diyarbakır, Van, Şırnak, Artvin, Kars): Anlaşmalı doğrudan hatlarla 2–3 iş günü."
+                ]
+            }
+        ],
+        "faqs": [
+            ("Şantiyemiz şehir merkezinin dışında (dağ/baraj sahasında) ise teslimat nasıl yapılır?",
+             "Şehir merkezine uzak baraj, HES, rüzgar santrali veya maden ocağı şantiyeleri için parsiyel nakliye araçlarıyla doğrudan şantiye koordinatına teslimat planlıyoruz ya da en yakın il/ilçe ambar merkezinden şantiye aracınızın alabileceği şekilde organize ediyoruz."),
+            ("Sevkiyat öncesi ürünlerin teknik veri föyü (TDS) ve güvenlik bilgi formu (MSDS) paylaşılıyor mu?",
+             "Evet. İSG ve kalite kontrol birimlerinizin denetimleri için talep ettiğiniz tüm ürünlerin güncel TDS ve MSDS belgeleri teklif ve fatura aşamasında elektronik olarak iletilmektedir.")
+        ]
+    },
+]
+
